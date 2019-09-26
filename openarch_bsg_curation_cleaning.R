@@ -1,15 +1,17 @@
-### GET DATA
+#### R script to download, merge and clean birth certificates using the csv's from openarch
 
-# Download all bsg.csv.zip files from openarch using the url list at github/wp4civreg, 
-# unzip and save as seperate csv's in working directory
+### load packages
 
 library(data.table)
 
+### GET DATA
+
+# Download all bsg.csv.zip files from openarch using the url list at github/wp4-civreg, 
+#   unzip and save as seperate csv's in working directory
+
 setwd("C:\\Users\\Ruben\\Desktop\\openarch\\birth")
 
-
 urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bsg_url_list_september2019.txt")
-
 
 for (url in urls) {
   download.file(url, destfile = basename(url), method="curl")
@@ -20,7 +22,7 @@ for (url in urls) {
 
 unlink("*.zip", recursive = FALSE)
 
-# combine all csv's into one data frame using selection of variables
+# combine csv's into one data frame while selecting variables
 
 file_list <- list.files()
 
@@ -46,7 +48,11 @@ openarch_birth <- rbindlist(datasets) # result should give same number of obs. a
 
 setDT(openarch_birth)
 
-### DATES cleaning
+### REMOVE DUPLICATES
+
+openarch_birth <- openarch_birth[!duplicated(openarch_birth),] 
+
+### DATES CLEANING
 
 # add “0” to days and months below 10 ("9" into "09")
 
@@ -82,9 +88,9 @@ openarch_birth[, EVENT_MONTH := ifelse(is.na(EVENT_MONTH), SOURCE_DATE_MONTH, EV
 openarch_birth[, EVENT_DATE := as.Date(paste(EVENT_DAY,EVENT_MONTH,EVENT_YEAR, sep = "-"), format = "%d-%m-%Y"),]
 openarch_birth[, SOURCE_DATE_DATE := as.Date(paste(SOURCE_DATE_DAY,SOURCE_DATE_MONTH,SOURCE_DATE_YEAR, sep = "-"), format = "%d-%m-%Y"),]
 
-# reset days into numericals removing 0's if < 10?
+# to do: reset days into numericals removing 0's if < 10?
 
-### AGES cleaning
+### AGES CLEANING
 
 # generate PR_FTHR_AGE_CLEAN
 
@@ -119,7 +125,7 @@ openarch_birth[PR_FTHR_AGE_CLEAN <= 14 | PR_FTHR_AGE_CLEAN >= 100 , PR_FTHR_AGE_
 
 # to do: add remaining _AGE_CLEAN that are not yet in the lookup table ('29jaar' > 29)
 
-### PLACE NAMES
+### PLACE NAMES CLEANING
 
 # empty cells to NA
 
