@@ -139,11 +139,9 @@ registrations_death_final <- registrations_death[, list(id_registration, registr
 openarch_registrations <- rbind(registrations_birth_final, registrations_marriage_final, registrations_death_final)
 
 fwrite(openarch_registrations, 
-       "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_registrations.csv", 
+       "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_registrations.csv.gz", 
        sep=";", row.names = FALSE, na = "")
 
-### Generate openarch_persons.csv
 
-# TO DO
 
 
