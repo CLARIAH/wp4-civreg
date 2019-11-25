@@ -1,5 +1,5 @@
 
-### Script to generate the BS tables according to the model as used by LINKS
+### Script to generate the 'Registration' table according to the model as used by LINKS
 
 #   use openarch_birth, openarch_marriage & openarch_death files:
 #   generated with openarch_per_certificatetype.R at https://github.com/CLARIAH/wp4-civreg or as csv available at Surfdrive > openarch > 
