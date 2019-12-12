@@ -79,7 +79,7 @@ openarch_unique_placenames <- rbindlist(list(
   openarch_all_placenames[, .N, by = PR_RES_PLACE]
   
   
-))[order(N)]
+), use.names = TRUE))[order(-N)]
 
 
 openarch_unique_placenames2 <- openarch_unique_placenames[, sum(N), by = EVENT_PLACE][order(-V1)]
