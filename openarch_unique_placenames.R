@@ -101,14 +101,7 @@ fwrite(openarch_unique_placenames, file = "C:\\Users\\Ruben\\Documents\\02. Werk
        sep=";", row.names = FALSE, na = "") 
        
 
-(# extract names between brackets as additional placename)
 
-openarch_unique_placenames <- setDT(unique_placenames)[, c("PLACENAME_CLEANED","PLACENAME_ADDITIONAL") :=tstrsplit(PLACENAME, "\\(|\\)")]
-
-  
-(# compare with other placenames list as TRUE/FALSE variable)
-    
-openarch_unique_placenames[, DutchToponyms := PLACENAME %in% DutchToponyms1812$toponym  ]
 
   
   
