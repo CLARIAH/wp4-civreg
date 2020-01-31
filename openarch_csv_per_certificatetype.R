@@ -12,7 +12,7 @@ setwd("C:\\Users\\Ruben\\Desktop\\openarch\\birth")
 
 # download files
 
-urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bsg_url_list_september2019.txt")
+urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bsg_url_list_januari2020.txt")
 
 for (url in urls) {
   download.file(url, destfile = basename(url), method="curl")
@@ -40,20 +40,47 @@ for (file in file_list){
                                                              PR_MTHR_NAME_SPRE, PR_MTHR_NAME_SURN, PR_MTHR_OCCUPATION, PR_MTHR_GENDER, PR_MTHR_BIR_DAY,
                                                              SOURCEREFERENCE_PLACE, SOURCE_REMARK, EVENT_REMARK, 
                                                              SOURCEREFERENCE_INSTITUTIONNAME,SOURCE_DIGITAL_ORIGINAL,
-                                                             SOURCEREFERENCE_DOCUMENTNUMBER)]
+                                                             SOURCEREFERENCE_DOCUMENTNUMBER, SOURCE_RECORD_GUID)]
   }}
 
 openarch_birth <- rbindlist(datasets)
 
+# remove identical rows
+
+openarch_birth_un <- openarch_birth[!duplicated(openarch_birth), ]
+
 # generate CLARIAH_ID (aktetype_plaats event_datum (als YYYYMMDD)_aktenummer)
 
-openarch_birth[, CLARIAH_ID := paste0(substr(tolower(EVENT_TYPE), 0, 1),"_",tolower(SOURCE_PLACE),"_",EVENT_YEAR,
+openarch_birth_un[, CLARIAH_ID := paste0(substr(tolower(EVENT_TYPE), 0, 1),"_",tolower(SOURCE_PLACE),"_",EVENT_YEAR,
                                      ifelse(EVENT_MONTH < 10, paste0("0", EVENT_MONTH), as.character(EVENT_MONTH)),
                                      ifelse(EVENT_DAY < 10, paste0("0", EVENT_DAY), as.character(EVENT_DAY)),"_",
                                      ifelse(SOURCEREFERENCE_DOCUMENTNUMBER == "" , paste0("NA"), SOURCEREFERENCE_DOCUMENTNUMBER)),]
 
-fwrite(openarch_birth, 
-       "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_birth.csv.gz", 
+# replace NANANA (EVENT DATES MISSING) with SOURCE DATES in CLARIAH ID
+
+openarch_birth_un[grepl("NANANA", CLARIAH_ID), CLARIAH_ID := paste0(substr(tolower(EVENT_TYPE), 0, 1),"_",tolower(SOURCE_PLACE),"_", SOURCE_DATE_YEAR,
+                                                                ifelse(SOURCE_DATE_MONTH < 10, paste0("0", SOURCE_DATE_MONTH),
+                                                                as.character(SOURCE_DATE_MONTH)),ifelse(SOURCE_DATE_DAY < 10, 
+                                                                paste0("0", SOURCE_DATE_DAY), as.character(SOURCE_DATE_DAY)),"_", 
+                                                                ifelse(SOURCEREFERENCE_DOCUMENTNUMBER == "" , paste0("NA"), 
+                                                                SOURCEREFERENCE_DOCUMENTNUMBER)),]
+
+# replace whitespaces in CLARIAH ID SOURCE PLACE with "_"
+
+openarch_birth_un[, CLARIAH_ID := gsub(" ", "", CLARIAH_ID, fixed = TRUE),]
+
+# version 2 of clariah_id
+
+
+
+openarch_birth_un[, clariah_id2 := paste0(CLARIAH_ID,"_",substr(tolower(openarch_birth_un$PR_NAME_GN), 0, 3), substr(tolower(openarch_birth_un$PR_NAME_SURN), 0,3)) ]
+
+## if no names then also NA?
+
+# write to csv
+
+fwrite(openarch_birth_un, 
+       "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_birth_unique.csv.gz", 
        sep=";", row.names = FALSE, na = "")
 
 
@@ -64,7 +91,7 @@ setwd("C:\\Users\\Ruben\\Desktop\\openarch\\marriage")
 
 # download files
 
-urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bsh_url_list_november2019.txt")
+urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bsh_url_list_januari2020.txt")
 
 for (url in urls) {
   download.file(url, destfile = basename(url), method="curl")
@@ -101,8 +128,8 @@ for (file in file_list){
                                                              BRIDE_MTHR_NAME_SURN, BRIDE_MTHR_GENDER,BRIDE_MTHR_AGE,BRIDE_MTHR_RELATIONTYPE, 
                                                              BRIDE_MTHR_BIR_PLACE, BRIDE_FTHR_BIR_PLACE, BRIDE_MTHR_OCCUPATION,
                                                              EVENT_TYPE, SOURCE_TYPE, SOURCEREFERENCE_PLACE, SOURCE_REMARK,EVENT_REMARK,
-                                                             SOURCEREFERENCE_INSTITUTIONNAME, SOURCEREFERENCE_DOCUMENTNUMBER, SOURCE_DIGITAL_ORIGINAL
-    )]
+                                                             SOURCEREFERENCE_INSTITUTIONNAME, SOURCEREFERENCE_DOCUMENTNUMBER, SOURCE_DIGITAL_ORIGINAL,
+                                                             SOURCE_RECORD_GUID    )]
   }}
 
 openarch_marriage <- rbindlist(datasets)
@@ -124,7 +151,7 @@ setwd("C:\\Users\\Ruben\\Desktop\\openarch\\death")
 
 # download files
 
-urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bso_url_list_november2019.txt")
+urls <- readLines("https://raw.githubusercontent.com/CLARIAH/wp4-civreg/master/openarch_bso_url_list_januari2020.txt")
 
 for (url in urls) {
   download.file(url, destfile = basename(url), method="curl")
@@ -152,7 +179,7 @@ for (file in file_list){
                                                              PR_FTHR_NAME_SURN, PR_MTHR_NAME_GN, PR_MTHR_NAME_SPRE, PR_MTHR_NAME_SURN, PR_MTHR_AGE,
                                                              PR_MTHR_OCCUPATION, EVENT_TYPE, SOURCE_TYPE, SOURCEREFERENCE_PLACE, SOURCEREFERENCE_REGISTRYNUMBER, 
                                                              SOURCEREFERENCE_DOCUMENTNUMBER, SOURCE_DIGITAL_ORIGINAL, SOURCE_REMARK,EVENT_REMARK,
-                                                             SOURCEREFERENCE_INSTITUTIONNAME)]
+                                                             SOURCEREFERENCE_INSTITUTIONNAME, SOURCE_RECORD_GUID)]
   }}
 
 openarch_death <- rbindlist(datasets)
@@ -167,3 +194,35 @@ openarch_death[, CLARIAH_ID := paste0(substr(tolower(EVENT_TYPE), 0, 1),"_",tolo
 fwrite(openarch_death, 
        "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_death.csv.gz", 
        sep=";", row.names = FALSE, na = "")
+
+
+
+### check GUID with LINKS
+
+
+
+openarch_marriage[grepl("24f35df96cddc8bdc5e496ce43f904a5", SOURCE_RECORD_GUID), ] 
+
+links_marriages[grepl("24f35df96cddc8bdc5e496ce43f904a5", id_persist_registration), list(id_persist_registration)]  
+
+
+links_marriages[, id_persist_registration := gsub("[{}]", "", id_persist_registration),]
+
+
+links_marriages[, OPENARCH_GUID := id_persist_registration %in% openarch_nonduplids$SOURCE_RECORD_GUID  ]
+
+links_marriages[, .N, by = OPENARCH_GUID]
+
+
+
+
+
+openarch_nonduplids[, LINKS_GUID := SOURCE_RECORD_GUID %in% links_marriages$id_persist_registration  ]
+
+openarch_nonduplids[, .N, by = LINKS_GUID]
+
+
+openarch_marriage[, SOURCE_RECORD_GUID := gsub("[{}]", "", SOURCE_RECORD_GUID),]
+
+openarch_nonduplids <- openarch_nonduplids[, SOURCE_RECORD_GUID := tolower(SOURCE_RECORD_GUID),]
+
