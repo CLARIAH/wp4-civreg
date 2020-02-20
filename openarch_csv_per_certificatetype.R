@@ -172,7 +172,7 @@ datasets = list()
 for (file in file_list){
   {
     datasets[[file]] <- fread(file, encoding="UTF-8")[, list(EVENT_DAY,	EVENT_MONTH, EVENT_YEAR, EVENT_TYPE, EVENT_PLACE, SOURCE_PLACE,
-                                                             SOURCE_DATE_DAY, SOURCE_DATE_MONTH, SOURCE_DATE_YEAR, SOURCE_PLACE,
+                                                             SOURCE_DATE_DAY, SOURCE_DATE_MONTH, SOURCE_DATE_YEAR,
                                                              PR_NAME_GN, PR_NAME_SPRE, PR_NAME_SURN,PR_RES_PLACE, PR_BIR_PLACE, 
                                                              PR_AGE,PR_BIR_DAY, PR_BIR_MONTH, PR_BIR_YEAR, PR_OCCUPATION, PR_GENDER,
                                                              PR_FTHR_NAME_GN, PR_FTHR_NAME_SPRE, PR_FTHR_AGE, PR_FTHR_OCCUPATION, 
