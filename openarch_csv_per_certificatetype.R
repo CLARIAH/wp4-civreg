@@ -184,45 +184,6 @@ for (file in file_list){
 
 openarch_death <- rbindlist(datasets)
 
-# generate CLARIAH_ID (aktetype_plaats event_datum (als YYYYMMDD)_aktenummer)
-
-openarch_death[, CLARIAH_ID := paste0(substr(tolower(EVENT_TYPE), 0, 1),"_",tolower(SOURCE_PLACE),"_",EVENT_YEAR,
-                                   ifelse(EVENT_MONTH < 10, paste0("0", EVENT_MONTH), as.character(EVENT_MONTH)),
-                                   ifelse(EVENT_DAY < 10, paste0("0", EVENT_DAY), as.character(EVENT_DAY)),"_",
-                                   ifelse(SOURCEREFERENCE_DOCUMENTNUMBER == "" , paste0("NA"), SOURCEREFERENCE_DOCUMENTNUMBER)),]
-
 fwrite(openarch_death, 
        "C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\openarch\\openarch_death.csv.gz", 
        sep=";", row.names = FALSE, na = "")
-
-
-
-### check GUID with LINKS
-
-
-
-openarch_marriage[grepl("24f35df96cddc8bdc5e496ce43f904a5", SOURCE_RECORD_GUID), ] 
-
-links_marriages[grepl("24f35df96cddc8bdc5e496ce43f904a5", id_persist_registration), list(id_persist_registration)]  
-
-
-links_marriages[, id_persist_registration := gsub("[{}]", "", id_persist_registration),]
-
-
-links_marriages[, OPENARCH_GUID := id_persist_registration %in% openarch_nonduplids$SOURCE_RECORD_GUID  ]
-
-links_marriages[, .N, by = OPENARCH_GUID]
-
-
-
-
-
-openarch_nonduplids[, LINKS_GUID := SOURCE_RECORD_GUID %in% links_marriages$id_persist_registration  ]
-
-openarch_nonduplids[, .N, by = LINKS_GUID]
-
-
-openarch_marriage[, SOURCE_RECORD_GUID := gsub("[{}]", "", SOURCE_RECORD_GUID),]
-
-openarch_nonduplids <- openarch_nonduplids[, SOURCE_RECORD_GUID := tolower(SOURCE_RECORD_GUID),]
-
