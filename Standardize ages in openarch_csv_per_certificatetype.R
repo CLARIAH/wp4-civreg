@@ -79,7 +79,7 @@
       df$Var1 <- gsub("~","",df$Var1) #remove ~
       df$Var1 <- ifelse(grepl("\\(", df$Var1),
                        as.numeric(gsub("\\D", "", df$Var1)),df$Var1)
-      df$Var1 <- ifelse(grepl("±", df$Var1),
+      df$Var1 <- ifelse(grepl("Â±", df$Var1),
                        as.numeric(gsub("\\D", "",df$Var1)),df$Var1)
     #remove unintelligible entries
       df$Var1 <- ifelse(grepl("\\?", df$Var1),"", df$Var1) #remove entries with ?
@@ -140,22 +140,22 @@
       df$week <- NA
       df$day <- NA
     #fix import errors
-      df$cleaned <- gsub("ã,â¡ã,â½ã,â¡", " en een half", df$cleaned)
-      df$cleaned <- gsub("ã,â¡½ã,â¡", "en een half", df$cleaned)
-      df$cleaned <- gsub("ãfâ", "en", df$cleaned)
-      df$cleaned <- gsub("ã«", "e", df$cleaned)
-      df$cleaned <- gsub("ã©", "e", df$cleaned)
-      df$cleaned <- gsub("ãf", "a", df$cleaned)
-      df$cleaned <- gsub("ã,â½", " en 1 half", df$cleaned); df$cleaned <- gsub("â½", " en 1 half", df$cleaned)
-      df$cleaned <- gsub("ã,â¼", " en 1 kwart", df$cleaned); df$cleaned <- gsub("â¼", " en 1 kwart", df$cleaned)
-      df$cleaned <- gsub("ã,â¾", " en 3 kwart", df$cleaned); df$cleaned <- gsub("â¾", " en 3 kwart", df$cleaned)
-      df$cleaned <- gsub("ã,â¡", "", df$cleaned)
-      df$cleaned <- gsub("ã,â±", "", df$cleaned); df$cleaned <- gsub("â±", "", df$cleaned)
-      df$cleaned <- gsub("ã,â¢", "", df$cleaned)
-      df$cleaned <- gsub("ã,â«", "", df$cleaned)
-      df$cleaned <- gsub("ã¡", "tot", df$cleaned)
-      df$cleaned <- gsub("ã,", "", df$cleaned)
-      df$cleaned <- gsub("ã,â¡", "", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¡Ã£,Ã¢Â½Ã£,Ã¢Â¡", " en een half", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¡Â½Ã£,Ã¢Â¡", "en een half", df$cleaned)
+      df$cleaned <- gsub("Ã£fÃ¢", "en", df$cleaned)
+      df$cleaned <- gsub("Ã£Â«", "e", df$cleaned)
+      df$cleaned <- gsub("Ã£Â©", "e", df$cleaned)
+      df$cleaned <- gsub("Ã£f", "a", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â½", " en 1 half", df$cleaned); df$cleaned <- gsub("Ã¢Â½", " en 1 half", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¼", " en 1 kwart", df$cleaned); df$cleaned <- gsub("Ã¢Â¼", " en 1 kwart", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¾", " en 3 kwart", df$cleaned); df$cleaned <- gsub("Ã¢Â¾", " en 3 kwart", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¡", "", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â±", "", df$cleaned); df$cleaned <- gsub("Ã¢Â±", "", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¢", "", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â«", "", df$cleaned)
+      df$cleaned <- gsub("Ã£Â¡", "tot", df$cleaned)
+      df$cleaned <- gsub("Ã£,", "", df$cleaned)
+      df$cleaned <- gsub("Ã£,Ã¢Â¡", "", df$cleaned)
     #missing characters
       df$cleaned <- ifelse(grepl("\\?", df$cleaned), "", df$cleaned)
       df$cleaned <- ifelse(grepl("\\!", df$cleaned), "", df$cleaned)
@@ -196,7 +196,7 @@
       df$cleaned <- ifelse(substr(df$cleaned,1,3)=="geb", "", df$cleaned)
     #remove odd fraction entries
       df$cleaned <- ifelse(grepl("\\d:\\d", df$cleaned), "", df$cleaned) #entries starting with 0: ...
-      df$cleaned <- ifelse(grepl("\\d:ã", df$cleaned), "", df$cleaned) #entries starting with 0:ã ...
+      df$cleaned <- ifelse(grepl("\\d:Ã£", df$cleaned), "", df$cleaned) #entries starting with 0:Ã£ ...
     #recode stillborn children
       df$day <- ifelse(grepl("levenl", df$cleaned), "1", df$day) #stillborn
       df$cleaned <- ifelse(grepl("levenl", df$cleaned), "",df$cleaned) #stillborn
