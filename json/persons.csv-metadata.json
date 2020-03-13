@@ -1,0 +1,337 @@
+{
+ "dialect": {
+  "quoteChar": "\"",
+  "delimiter": ";",
+  "encoding": "Windows-1252"
+ },
+ "dcat:keyword": [],
+ "dc:license": {
+  "@id": "http://opendefinition.org/licenses/cc-by/"
+ },
+ "dc:publisher": {
+  "schema:name": "CLARIAH Structured Data Hub - Datalegend",
+  "schema:url": {
+   "@id": "http://datalegend.net"
+  }
+ },
+ "url": "persons.csv",
+ "@context": [
+  "https://raw.githubusercontent.com/CLARIAH/COW/master/csvw.json",
+  {
+   "@base": "https://iisg.amsterdam/links/",
+   "@language": "en"
+  },
+  {
+   "owl": "http://www.w3.org/2002/07/owl#",
+   "napp-eng81": "https://iisg.amsterdam/napp/dataset/englandwales1881/",
+   "dbo": "http://dbpedia.org/ontology/",
+   "clioctr": "https://iisg.amsterdam/clio/country/",
+   "hisclass": "https://iisg.amsterdam/hisclass/",
+   "hisco-product": "https://iisg.amsterdam/hisco/product/",
+   "ldp": "http://www.w3.org/ns/ldp#",
+   "clio": "https://iisg.amsterdam/clio/",
+   "occhisco": "https://iisg.amsterdam/napp/OCCHISCO/",
+   "dbr": "http://dbpedia.org/resource/",
+   "skos": "http://www.w3.org/2004/02/skos/core#",
+   "xml": "http://www.w3.org/XML/1998/namespace/",
+   "sdmx-concept": "http://purl.org/linked-data/sdmx/2009/concept#",
+   "napp": "https://iisg.amsterdam/napp/",
+   "prov": "http://www.w3.org/ns/prov#",
+   "sdmx-code": "http://purl.org/linked-data/sdmx/2009/code#",
+   "napp-can91": "https://iisg.amsterdam/napp/dataset/canada1891/",
+   "hiscam": "https://iisg.amsterdam/hiscam/",
+   "dbpedia": "http://dbpedia.org/resource/",
+   "np": "http://www.nanopub.org/nschema#",
+   "hisclass5": "https://iisg.amsterdam/hisclass5/",
+   "canfam-auke": "https://iisg.amsterdam/canfam/auke/",
+   "dcterms": "http://purl.org/dc/terms/",
+   "schema": "http://schema.org/",
+   "bio": "http://purl.org/vocab/bio/0.1/",
+   "microheights": "https://iisg.amsterdam/microheights/",
+   "sdv": "https://iisg.amsterdam/vocab/",
+   "hisco": "https://iisg.amsterdam/hisco/",
+   "bibo": "http://purl.org/ontology/bibo/",
+   "sdmx-dimension": "http://purl.org/linked-data/sdmx/2009/dimension#",
+   "hsn": "https://iisg.amsterdam/hsn2013a/",
+   "dc": "http://purl.org/dc/terms/",
+   "hisco-relation": "https://iisg.amsterdam/hisco/relation/",
+   "hisco-status": "https://iisg.amsterdam/hisco/status/",
+   "dbp": "http://dbpedia.org/property/",
+   "clioprop": "https://iisg.amsterdam/clio/property/",
+   "csvw": "http://www.w3.org/ns/csvw#",
+   "clioind": "https://iisg.amsterdam/clio/indicator/",
+   "dc11": "http://purl.org/dc/elements/1.1/",
+   "sdr": "https://iisg.amsterdam/",
+   "qb": "http://purl.org/linked-data/cube#",
+   "canfam-dimension": "http://data.socialhistory.org/vocab/canfam/dimension/",
+   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+   "canfam": "https://iisg.amsterdam/canfam/dataset/canada1901/",
+   "napp-sct81": "https://iisg.amsterdam/napp/dataset/scotland1881/",
+   "sdmx-measure": "http://purl.org/linked-data/sdmx/2009/measure#",
+   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+   "foaf": "http://xmlns.com/foaf/0.1/",
+   "xsd": "http://www.w3.org/2001/XMLSchema#",
+   "time": "http://www.w3.org/2006/time#",
+   "napp-dimension": "http://data.socialhistory.org/vocab/napp/dimension/"
+  }
+ ],
+ "dc:title": "persons.csv",
+ "@id": "https://iisg.amsterdam/persons.csv",
+ "dc:modified": {
+  "@value": "2020-02-05",
+  "@type": "xsd:date"
+ },
+ "tableSchema": {
+   "aboutUrl": "person/{id_person}",
+   "primaryKey": "id_person",
+   "columns": [
+     {
+       "datatype": "int",
+       "propertyUrl": "vocab/personID",
+       "csvw:value":"{{id_person}}"
+     },
+     {
+      "propertyUrl": "rdf:type",
+      "valueUrl": "schema:Person"
+     },
+     {
+       "datatype": "string",
+      "propertyUrl": "schema:givenName",
+      "name": "firstname"
+     },
+     {
+       "datatype": "string",
+      "propertyUrl": "vocab/prefixFamilyName",
+      "name": "prefix"
+     },
+     {
+       "datatype": "string",
+      "propertyUrl": "schema:familyName",
+      "name": "familyname"
+     },
+     {
+       "datatype": "string",
+      "propertyUrl": "schema:gender",
+      "name": "sex"
+     },
+     {
+      "datatype": "string",
+      "propertyUrl": "vocab/civilStatus",
+      "name": "civil_status"
+     },
+     {
+       "null": {"@list": [{"name": "death", "null": "n"}]},
+      "datatype": "boolean",
+      "propertyUrl": "vocab/alive",
+      "csvw:value":"true"
+     },
+     {
+       "null": {"@list": [{"name": "age_day", "null": ""}]},
+       "datatype": "int",
+       "propertyUrl": "vocab/ageDays",
+       "csvw:value":"{{age_day}}"
+     },
+     {
+       "null": {"@list": [{"name": "age_week", "null": ""}]},
+       "datatype": "int",
+       "propertyUrl": "vocab/ageWeeks",
+       "csvw:value":"{{age_week}}"
+     },
+     {
+       "null": {"@list": [{"name": "age_month", "null": ""}]},
+       "datatype": "int",
+       "propertyUrl": "vocab/ageMonths",
+       "csvw:value":"{{age_month}}"
+     },
+     {
+       "null": {"@list": [{"name": "age_year", "null": ""}]},
+       "datatype": "int",
+       "propertyUrl": "vocab/ageYears",
+       "csvw:value":"{{age_year}}"
+     },
+     {
+      "datatype": "string",
+      "propertyUrl": "vocab/stillbirth",
+      "name": "stillbirth"
+     },
+     {
+       "propertyUrl": "schema:hasOccupation",
+       "valueUrl":"occupation/{{occupation}}"
+     },
+     {
+       "null": {"@list": [{"name": "occupation", "null": ""}]},
+       "virtual": "true",
+       "datatype": "string",
+       "aboutUrl":"occupation/{{occupation}}",
+       "propertyUrl": "rdfs:label",
+       "name":"occupation"
+      },
+      {
+        "null": {"@list": [{"name": "occupation", "null": ""}]},
+        "virtual": "true",
+        "aboutUrl":"occupation/{{occupation}}",
+        "propertyUrl": "rdf:type",
+        "valueUrl":"schema:Occupation"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"registration/{{id_registration}}",
+        "propertyUrl": "vocab/registerEvent",
+        "valueUrl": "birth/{{id_registration}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"birth/{{id_registration}}",
+        "propertyUrl": "rdf:type",
+        "valueUrl": "bio:Birth"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"birth/{{id_registration}}",
+        "propertyUrl": "{% if role =='1'%}vocab/newborn{% elif role =='2'%}vocab/mother{% elif role =='3' %}vocab/father{% endif %}",
+        "valueUrl": "person/{{id_person}}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "date",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "birth_date", "null": ""}]},
+        "aboutUrl":"birth/{{id_registration}}",
+        "propertyUrl": "bio:date",
+        "csvw:value": "{{ birth_date[6:10] ~ '-' ~ birth_date[3:5] ~ '-' ~ birth_date[:2] }}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "string",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "birth_date_flag", "null": "0"}]},
+        "aboutUrl":"birth/{{id_registration}}",
+        "propertyUrl": "vocab/birthDateFlag",
+        "csvw:value": "{{birth_date_flag}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "2"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "birth_location", "null": ""}]},
+        "aboutUrl":"birth/{{id_registration}}",
+        "propertyUrl": "schema:location",
+        "valueUrl": "place/{{birth_location}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"registration/{{id_registration}}",
+        "propertyUrl": "vocab/registerEvent",
+        "valueUrl": "marriage/{{id_registration}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"marriage/{{id_registration}}",
+        "propertyUrl": "rdf:type",
+        "valueUrl": "bio:Marriage"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"}]},
+        "aboutUrl":"marriage/{{id_registration}}",
+        "propertyUrl": "{% if role =='4'%}vocab/bride{% elif role =='5'%}vocab/motherBride{% elif role =='6' %}vocab/fatherBride{% elif role =='7'%}vocab/groom{% elif role =='8'%}vocab/motherGroom{% elif role =='9'%}vocab/fatherGroom{% endif %}",
+        "valueUrl": "person/{{id_person}}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "date",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "mar_date", "null": ""}]},
+        "aboutUrl":"marriage/{{id_registration}}",
+        "propertyUrl": "bio:date",
+        "csvw:value": "{{ mar_date[6:10] ~ '-' ~ mar_date[3:5] ~ '-' ~ mar_date[:2] }}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "string",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "mar_date_flag", "null": "0"}]},
+        "aboutUrl":"marriage/{{id_registration}}",
+        "propertyUrl": "vocab/marriageDateFlag",
+        "csvw:value": "{{mar_date_flag}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "mar_location", "null": ""}]},
+        "aboutUrl":"marriage/{{id_registration}}",
+        "propertyUrl": "schema:location",
+        "valueUrl": "place/{{mar_location}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "2"}]},
+        "aboutUrl":"registration/{{id_registration}}",
+        "propertyUrl": "vocab/registerEvent",
+        "valueUrl": "death/{{id_registration}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "2"}]},
+        "aboutUrl":"death/{{id_registration}}",
+        "propertyUrl": "rdf:type",
+        "valueUrl": "bio:Death"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "2"}]},
+        "aboutUrl":"death/{{id_registration}}",
+        "propertyUrl": "{% if role =='10'%}vocab/deceased{% elif role =='11'%}bio:partner{% elif role =='2' %}vocab/mother{% elif role =='3'%}vocab/father{% endif %}",
+        "valueUrl": "person/{{id_person}}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "date",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "2"},
+          {"name": "death_year", "null": "0"}]},
+        "aboutUrl":"death/{{id_registration}}",
+        "propertyUrl": "bio:date",
+        "csvw:value": "{{ death_year ~ '-' ~ death_month.zfill(2) ~ '-' ~ death_day.zfill(2) }}"
+      },
+      {
+        "virtual": "true",
+        "datatype": "string",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "2"},
+          {"name": "death_date_flag", "null": "0"}]},
+        "aboutUrl":"death/{{id_registration}}",
+        "propertyUrl": "vocab/deathDateFlag",
+        "csvw:value": "{{death_date_flag}}"
+      },
+      {
+        "virtual": "true",
+        "null": {"@list": [{"name": "registration_maintype", "null": "1"},
+          {"name": "registration_maintype", "null": "3"},
+          {"name": "death_location", "null": ""}]},
+        "aboutUrl":"death/{{id_registration}}",
+        "propertyUrl": "vocab/event_location",
+        "valueUrl": "place/{{death_location}}"
+      }
+   ]
+  }
+}

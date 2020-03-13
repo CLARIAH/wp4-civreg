@@ -1,0 +1,270 @@
+{
+ "dialect": {
+  "quoteChar": "\"",
+  "delimiter": ";",
+  "encoding": "ISO-8859-1"
+ },
+ "dcat:keyword": [],
+ "dc:license": {
+  "@id": "http://opendefinition.org/licenses/cc-by/"
+ },
+ "dc:publisher": {
+  "schema:name": "CLARIAH Structured Data Hub - Datalegend",
+  "schema:url": {
+    "@id": "http://datalegend.net"
+   }
+  },
+  "dc:creator": {
+    "rdf:type": [
+      {
+        "@id": "foaf:Person"
+      },
+      {
+        "@id": "prov:Person"
+      }
+    ],
+    "foaf:name": ["Auke Rijpma"]
+  },"dc:creator": {
+    "rdf:type": [
+      {
+        "@id": "foaf:Person"
+      },
+      {
+        "@id": "prov:Person"
+      }
+    ],
+    "foaf:name": ["Joe Raad"]
+  },
+  "dc:creator": {
+    "rdf:type": [
+      {
+        "@id": "foaf:Person"
+      },
+      {
+        "@id": "prov:Person"
+      }
+    ],
+    "foaf:name": ["Richard Zijdeman"]
+  },
+  "prov:wasDerivedFrom": [{
+    "rdf:type": {
+        "@id": "bibo:Article"
+    },
+    "dc:title": {
+        "@value": " Linking System for historical family reconstruction (LINKS) ",
+        "@lang": "en"
+    },
+    "dc:creator": ["Mandemakers, K."],
+    "dc:publisher": "Edinburg UP",
+    "dc:date": {"@value":"2014", "@type":"xsd:gYear"},
+    "dc:isPartOf": ["http://www.euppublishing.com/toc/hac/14/1-2"]
+ }],
+ "url": "locations.csv",
+ "@context": [
+  "http://csvw.clariah-sdh.eculture.labs.vu.nl/csvw.json",
+  {
+   "@base": "https://iisg.amsterdam/links/",
+   "@language": "en"
+  },
+  {
+   "owl": "http://www.w3.org/2002/07/owl#",
+   "napp-eng81": "https://iisg.amsterdam/napp/dataset/englandwales1881/",
+   "dbo": "http://dbpedia.org/ontology/",
+   "clioctr": "https://iisg.amsterdam/clio/country/",
+   "hisclass": "https://iisg.amsterdam/hisclass/",
+   "hisco-product": "https://iisg.amsterdam/hisco/product/",
+   "ldp": "http://www.w3.org/ns/ldp#",
+   "clio": "https://iisg.amsterdam/clio/",
+   "occhisco": "https://iisg.amsterdam/napp/OCCHISCO/",
+   "dbr": "http://dbpedia.org/resource/",
+   "skos": "http://www.w3.org/2004/02/skos/core#",
+   "xml": "http://www.w3.org/XML/1998/namespace/",
+   "sdmx-concept": "http://purl.org/linked-data/sdmx/2009/concept#",
+   "napp": "https://iisg.amsterdam/napp/",
+   "prov": "http://www.w3.org/ns/prov#",
+   "sdmx-code": "http://purl.org/linked-data/sdmx/2009/code#",
+   "napp-can91": "https://iisg.amsterdam/napp/dataset/canada1891/",
+   "hiscam": "https://iisg.amsterdam/hiscam/",
+   "dbpedia": "http://dbpedia.org/resource/",
+   "np": "http://www.nanopub.org/nschema#",
+   "hisclass5": "https://iisg.amsterdam/hisclass5/",
+   "canfam-auke": "https://iisg.amsterdam/canfam/auke/",
+   "dcterms": "http://purl.org/dc/terms/",
+   "schema": "http://schema.org/",
+   "bio":"http://purl.org/vocab/bio/0.1/",
+   "foaf":"http://xmlns.com/foaf/0.1/",
+   "iisg": "https://iisg.amsterdam/links/",
+   "iisgv": "https://iisg.amsterdam/links/vocab/",
+   "microheights": "https://iisg.amsterdam/microheights/",
+   "sdv": "https://iisg.amsterdam/vocab/",
+   "hisco": "https://iisg.amsterdam/hisco/",
+   "bibo": "http://purl.org/ontology/bibo/",
+   "sdmx-dimension": "http://purl.org/linked-data/sdmx/2009/dimension#",
+   "hsn": "https://iisg.amsterdam/hsn2013a/",
+   "dc": "http://purl.org/dc/terms/",
+   "hisco-relation": "https://iisg.amsterdam/hisco/relation/",
+   "hisco-status": "https://iisg.amsterdam/hisco/status/",
+   "dbp": "http://dbpedia.org/property/",
+   "clioprop": "https://iisg.amsterdam/clio/property/",
+   "csvw": "http://www.w3.org/ns/csvw#",
+   "clioind": "https://iisg.amsterdam/clio/indicator/",
+   "dc11": "http://purl.org/dc/elements/1.1/",
+   "sdr": "https://iisg.amsterdam/",
+   "qb": "http://purl.org/linked-data/cube#",
+   "canfam-dimension": "http://data.socialhistory.org/vocab/canfam/dimension/",
+   "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+   "canfam": "https://iisg.amsterdam/canfam/dataset/canada1901/",
+   "napp-sct81": "https://iisg.amsterdam/napp/dataset/scotland1881/",
+   "sdmx-measure": "http://purl.org/linked-data/sdmx/2009/measure#",
+   "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+   "foaf": "http://xmlns.com/foaf/0.1/",
+   "xsd": "http://www.w3.org/2001/XMLSchema#",
+   "time": "http://www.w3.org/2006/time#",
+   "napp-dimension": "http://data.socialhistory.org/vocab/napp/dimension/"
+  }
+ ],
+ "dc:title": "Zeeland Locations",
+ "@id": "https://iisg.amsterdam/links/locations.csv",
+ "dc:modified": {
+  "@value": "2020-02-05",
+  "@type": "xsd:date"
+ },
+ "tableSchema": {
+  "aboutUrl": "place/{location_no}",
+  "primaryKey": "location_no",
+  "columns": [
+   {
+    "datatype": "int",
+    "propertyUrl": "vocab/placeID",
+    "csvw:value":"{{location_no}}"
+   },
+   {
+    "datatype": "string",
+    "propertyUrl": "rdfs:label",
+    "csvw:value":"{{location}}"
+   },
+   {
+     "propertyUrl": "rdf:type",
+     "valueUrl": "schema:Place"
+   },
+   {
+     "propertyUrl": "vocab/inMunicipality",
+     "valueUrl": "municipality/{{municipality}}"
+   },
+    {
+    "null": {"@list": [{"name": "municipality", "null": ""}]},
+    "virtual": "true",
+    "datatype": "string",
+    "aboutUrl":"municipality/{{municipality}}",
+    "propertyUrl": "rdfs:label",
+    "csvw:value":"{{municipality}}"
+   },
+   {
+     "null": {"@list": [{"name": "municipality", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"municipality/{{municipality}}",
+    "propertyUrl": "rdf:type",
+    "valueUrl":"vocab/Municipality"
+   },
+   {
+     "propertyUrl": "vocab/inProvince",
+     "valueUrl": "province/{{province}}"
+   },
+    {
+      "null": {"@list": [{"name": "province", "null": ""}]},
+    "virtual": "true",
+    "datatype": "string",
+    "aboutUrl":"province/{{province}}",
+     "propertyUrl": "rdfs:label",
+      "csvw:value":"{{province}}"
+   },
+   {
+     "null": {"@list": [{"name": "province", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"province/{{province}}",
+    "propertyUrl": "rdf:type",
+    "valueUrl":"vocab/Province"
+   },
+   {
+     "propertyUrl": "vocab/inRegion",
+     "valueUrl": "region/{{region}}"
+   },
+    {
+    "null": {"@list": [{"name": "region", "null": ""}]},
+    "virtual": "true",
+    "datatype": "string",
+    "aboutUrl":"region/{{region}}",
+    "propertyUrl": "rdfs:label",
+    "csvw:value":"{{region}}"
+   },
+   {
+    "null": {"@list": [{"name": "region", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"region/{{region}}",
+    "propertyUrl": "rdf:type",
+    "valueUrl":"vocab/Region"
+   },
+  {
+     "propertyUrl": "vocab/inCountry",
+     "valueUrl": "country/{{country}}"
+   },
+    {
+    "null": {"@list": [{"name": "country", "null": ""}]},
+    "virtual": "true",
+    "datatype": "string",
+    "aboutUrl":"country/{{country}}",
+    "propertyUrl": "rdfs:label",
+    "csvw:value":"{{country}}"
+   },
+   {
+    "null": {"@list": [{"name": "country", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"country/{{country}}",
+    "propertyUrl": "rdf:type",
+    "valueUrl":"vocab/Country"
+   },
+   {
+    "null": {"@list": [{"name": "municipality", "null": ""}, {"name": "province", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"municipality/{{municipality}}",
+    "propertyUrl": "vocab/inProvince",
+    "valueUrl":"province/{{province}}"
+   },
+   {
+    "null": {"@list": [{"name": "municipality", "null": ""}, {"name": "region", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"municipality/{{municipality}}",
+    "propertyUrl": "vocab/inRegion",
+    "valueUrl":"region/{{region}}"
+   },
+   {
+    "null": {"@list": [{"name": "municipality", "null": ""}, {"name": "country", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"municipality/{{municipality}}",
+    "propertyUrl": "vocab/inCountry",
+    "valueUrl":"country/{{country}}"
+   },
+   {
+    "null": {"@list": [{"name": "province", "null": ""}, {"name": "region", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"province/{{province}}",
+    "propertyUrl": "vocab/inRegion",
+    "valueUrl":"region/{{region}}"
+   },
+   {
+    "null": {"@list": [{"name": "province", "null": ""}, {"name": "country", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"province/{{province}}",
+    "propertyUrl": "vocab/inCountry",
+    "valueUrl":"country/{{country}}"
+   },
+   {
+    "null": {"@list": [{"name": "region", "null": ""}, {"name": "country", "null": ""}]},
+    "virtual": "true",
+    "aboutUrl":"region/{{region}}",
+    "propertyUrl": "vocab/inCountry",
+    "valueUrl":"country/{{country}}"
+   }
+  ]
+ }
+}
