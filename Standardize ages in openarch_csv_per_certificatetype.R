@@ -154,7 +154,7 @@
       df$cleaned <- gsub("ã,â¢", "", df$cleaned)
       df$cleaned <- gsub("ã,â«", "", df$cleaned)
       df$cleaned <- gsub("ã,â«", "", df$cleaned)
-      df$cleaned <- gsub("ãfâ"", "a", df$cleaned)
+      df$cleaned <- gsub("ãfâ", "a", df$cleaned)
       df$cleaned <- gsub("ãf", "a", df$cleaned)
       df$cleaned <- gsub("ã¡", "a", df$cleaned)
       df$cleaned <- gsub("ã,", "", df$cleaned)
