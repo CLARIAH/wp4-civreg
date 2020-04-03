@@ -153,7 +153,10 @@
       df$cleaned <- gsub("ã,â±", "", df$cleaned); df$cleaned <- gsub("â±", "", df$cleaned)
       df$cleaned <- gsub("ã,â¢", "", df$cleaned)
       df$cleaned <- gsub("ã,â«", "", df$cleaned)
-      df$cleaned <- gsub("ã¡", "tot", df$cleaned)
+      df$cleaned <- gsub("ã,â«", "", df$cleaned)
+      df$cleaned <- gsub("ãfâ"", "a", df$cleaned)
+      df$cleaned <- gsub("ãf", "a", df$cleaned)
+      df$cleaned <- gsub("ã¡", "a", df$cleaned)
       df$cleaned <- gsub("ã,", "", df$cleaned)
       df$cleaned <- gsub("ã,â¡", "", df$cleaned)
     #missing characters
@@ -161,6 +164,7 @@
       df$cleaned <- ifelse(grepl("\\!", df$cleaned), "", df$cleaned)
       df$cleaned <- ifelse(grepl("%", df$cleaned), "", df$cleaned)
       df$cleaned <- ifelse(grepl("&", df$cleaned), "", df$cleaned)
+      df$cleaned <- ifelse(grepl("\\*", df$cleaned), "", df$cleaned)
       df$cleaned <- ifelse(grepl("\\$", df$cleaned), "", df$cleaned)
       df$cleaned <- ifelse(grepl("\\.\\.", df$cleaned) & grepl("\\d", substr(df$cleaned,1,2))==F, "", df$cleaned)
       df$cleaned <- ifelse(substr(df$cleaned,1,1)=="<", "", df$cleaned)
@@ -175,13 +179,14 @@
       df$cleaned <- gsub(" - 1/2", ".5", df$cleaned) #1/2
       df$cleaned <- gsub("1/2", ".5", df$cleaned) #1/2
       df$cleaned <- gsub("/1-2", ".5", df$cleaned) #1/2
+      df$cleaned <- gsub("1\\.2", ".5", df$cleaned) #1/2
       df$cleaned <- gsub("1/3", "1 derde", df$cleaned) #1/3
       df$cleaned <- gsub("2/3", "2 derde", df$cleaned) #2/3
       df$cleaned <- gsub("1/5", "4 maanden", df$cleaned) #1/5
       df$cleaned <- gsub("1/6", "2 maanden", df$cleaned) #1/6
     #comma's with dots
       df$cleaned <- gsub(",25", "en 1 kwart", df$cleaned)
-      df$cleaned <- gsub(",5", "en 1 half", df$cleaned)
+      df$cleaned <- gsub(",5", ".5", df$cleaned)
       df$cleaned <- gsub(",75", "en 3 kwart", df$cleaned)
     #remove missings
       df$cleaned <- ifelse(df$cleaned=="-", "", df$cleaned) #remove missings indicated with -
@@ -192,6 +197,7 @@
     #remove guestimates
       df$cleaned <- ifelse(grepl("schat", df$cleaned), "", df$cleaned) #remove schatting [estimation]
       df$cleaned <- ifelse(grepl("gis", df$cleaned), "", df$cleaned) #remove gissing [conjecture]
+      df$cleaned <- ifelse(grepl("presumtie", df$cleaned), "", df$cleaned) #remove presumptief [assumption]
     #no age information
       df$cleaned <- ifelse(substr(df$cleaned,1,3)=="geb", "", df$cleaned)
     #remove odd fraction entries
@@ -224,9 +230,38 @@
       df$cleaned <- gsub("een van een tweeling", "", df$cleaned) #twin
       df$cleaned <- gsub("tweeling", "", df$cleaned) #twin
     #remove ranges
+      #tussen [between]
+      df$month <- ifelse(grepl("tussen", df$cleaned) & grepl("maand", df$cleaned), gsub("\\D", "", sub(" en .*", '', df$cleaned)), df$month)
+      df$cleaned <- ifelse(grepl("tussen", df$cleaned) & grepl("maand", df$cleaned), "", df$cleaned)
+      df$year <- ifelse(grepl("tussen", df$cleaned) & as.numeric(gsub("\\D", "", sub(".* en ", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub(" en .*", '', df$cleaned)))==2, 
+                        (as.numeric(gsub("\\D", "", sub(".* en ", '', df$cleaned)))+as.numeric(gsub("\\D", "", sub(" en .*", '', df$cleaned))))/2, df$year)
+      df$year <- ifelse(grepl("tussen", df$cleaned) & as.numeric(gsub("\\D", "", sub(".* en ", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub(" en .*", '', df$cleaned)))==1, 
+                        gsub("\\D", "", sub(" en .*", '', df$cleaned)), df$year)
       df$cleaned <- ifelse(grepl("tussen", df$cleaned), "", df$cleaned) #remove entries with age range 
-      df$year <- ifelse(grepl("tot", df$cleaned) & substr(df$cleaned,1,1)=="8", 9, df$year) #code ranges 8-10 
+      #tot [until]
+      df$month <- ifelse(grepl("tot", df$cleaned) & grepl("maand", df$cleaned), gsub("\\D", "", sub("tot.*", '', df$cleaned)), df$month)
+      df$cleaned <- ifelse(grepl("tot", df$cleaned) & grepl("maand", df$cleaned), "", df$cleaned)
+      df$year <- ifelse(grepl("tot", df$cleaned) & as.numeric(gsub("\\D", "", sub(".*tot", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub("tot.*", '', df$cleaned)))==2, 
+                        (as.numeric(gsub("\\D", "", sub(".*tot", '', df$cleaned)))+as.numeric(gsub("\\D", "", sub("tot.*", '', df$cleaned))))/2, df$year)
+      df$year <- ifelse(grepl("tot", df$cleaned) & as.numeric(gsub("\\D", "", sub(".*tot", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub("tot.*", '', df$cleaned)))==1, 
+                        gsub("\\D", "", sub("tot.*", '', df$cleaned)), df$year)
       df$cleaned <- ifelse(grepl("tot", df$cleaned), "", df$cleaned) #remove entries with age range
+      # a [approximately]
+      df$cleaned <- gsub("bijn a", "bijna", df$cleaned)
+      df$day <- ifelse(grepl(" a ", df$cleaned) & grepl("uren", df$cleaned), 1, df$day)
+      df$cleaned <- ifelse(grepl(" a ", df$cleaned) & grepl("uren", df$cleaned), "", df$cleaned)
+      df$day <- ifelse(grepl(" a ", df$cleaned) & grepl("g", df$cleaned), gsub("\\D", "", sub(" a .*", '', df$cleaned)), df$day)
+      df$cleaned <- ifelse(grepl(" a ", df$cleaned) & grepl("g", df$cleaned), "", df$cleaned)
+      df$week <- ifelse(grepl(" a ", df$cleaned) & grepl("w", df$cleaned), gsub("\\D", "", sub(" a .*", '', df$cleaned)), df$week)
+      df$cleaned <- ifelse(grepl(" a ", df$cleaned) & grepl("w", df$cleaned), "", df$cleaned)
+      df$month <- ifelse(grepl(" a ", df$cleaned) & grepl("maand", df$cleaned), gsub("\\D", "", sub(" a .*", '', df$cleaned)), df$month)
+      df$cleaned <- ifelse(grepl(" a ", df$cleaned) & grepl("maand", df$cleaned), "", df$cleaned)
+      df$year <- ifelse(grepl(" a ", df$cleaned) & as.numeric(gsub("\\D", "", sub(".* a ", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub(" a .*", '', df$cleaned)))==2, 
+                        (as.numeric(gsub("\\D", "", sub(".* a ", '', df$cleaned)))+as.numeric(gsub("\\D", "", sub(" a .*", '', df$cleaned))))/2, df$year)
+      df$year <- ifelse(grepl(" a ", df$cleaned) & as.numeric(gsub("\\D", "", sub(".* a ", '', df$cleaned)))-as.numeric(gsub("\\D", "", sub(" a .*", '', df$cleaned)))==1, 
+                        gsub("\\D", "", sub(" a .*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl(" a ", df$cleaned), "", df$cleaned) #remove entries with age range
+      #
       df$cleaned <- ifelse(grepl("\\d-\\d", df$cleaned), "", df$cleaned) #remove entries with age range
     #remove dates
       df$cleaned <- ifelse(grepl("\\d-\\d{4}", df$cleaned) & grepl("aar", df$cleaned) | 
@@ -236,8 +271,8 @@
       df$cleaned <- ifelse(grepl("\\d-\\d{4}", df$cleaned) | grepl("\\d \\d{4}", df$cleaned),"", df$cleaned) #remove dates
     #recode hours / minutes
       #minutes
-      df$day <- ifelse(grepl("minut", df$cleaned), "1", df$day)
-      df$cleaned <- ifelse(grepl("minut", df$cleaned), "",df$cleaned)
+      df$day <- ifelse(grepl("min", df$cleaned) & grepl("min ", df$cleaned)==F & grepl("minus", df$cleaned)==F, "1", df$day)
+      df$cleaned <- ifelse(grepl("min", df$cleaned) & grepl("min ", df$cleaned)==F & grepl("minus", df$cleaned)==F, "",df$cleaned)
       #1/4 hour
       df$day <- ifelse(grepl("kwartier", df$cleaned), "1", df$day)
       df$cleaned <- ifelse(grepl("kwartier", df$cleaned), "",df$cleaned)
@@ -578,6 +613,7 @@
       df$cleaned <- gsub("nabij ", "", df$cleaned) #remove nabij [near]
       df$cleaned <- ifelse(grepl("ru", substr(df$cleaned,1,3)), sub("^([^0-9.]+)", '', df$cleaned), df$cleaned) #remove starting ruim [more than]
       df$cleaned <- ifelse(grepl("uim", substr(df$cleaned,1,6)), sub("^([^0-9.]+)", '', df$cleaned), df$cleaned) #remove starting ruim [more than]
+      df$cleaned <- gsub("ruim", "", df$cleaned)
       df$cleaned <- gsub("rond ", "", df$cleaned)
       df$cleaned <- gsub("nagenoeg ", "", df$cleaned)
       df$cleaned <- gsub("zowat ", "", df$cleaned) #zowat [almost]
@@ -588,6 +624,8 @@
       df$cleaned <- gsub("\\+/\\- ", "", df$cleaned) #+/-
       df$cleaned <- gsub("\\+/ \\- ", "", df$cleaned) #+/-
       df$cleaned <- gsub("plus minus ", "", df$cleaned) #+/-
+      df$cleaned <- gsub("\\+", "en", df$cleaned) #+
+      df$cleaned <- gsub("plus", "en", df$cleaned) #+
     #clean jaar
       df$cleaned <- ifelse(substr(df$cleaned,1,4)=="jaar", gsub("jaar", "1 jaar", df$cleaned), df$cleaned)
       df$cleaned <- ifelse(df$cleaned=="dag", "1 dag", df$cleaned)
@@ -649,6 +687,8 @@
       df$month <- ifelse(grepl("\\.5", df$cleaned), 6, df$month)
       df$cleaned <- ifelse(grepl("\\.5", df$cleaned), "", df$cleaned)
     #clean jaar [year]
+      df$cleaned <- ifelse(grepl("\\d r", df$cleaned), gsub(" r", " jaar", df$cleaned), df$cleaned)
+      df$cleaned <- gsub("gaar", "jaar", df$cleaned)
       df$cleaned <- gsub("jhaar", "jaar", df$cleaned)
       df$cleaned <- gsub("haar", "jaar", df$cleaned)
       df$cleaned <- gsub("iaar", "jaar", df$cleaned)
@@ -664,21 +704,55 @@
       df$cleaned <- gsub("laren", "jaar", df$cleaned)
       df$cleaned <- gsub("jaar4", "jaar", df$cleaned)
       df$cleaned <- gsub("jaar5", "jaar", df$cleaned)
-      #clean maand [month]
+    #clean maand [month]
       df$cleaned <- gsub("naand", "maand", df$cleaned)
       df$cleaned <- gsub("m aand", "maand", df$cleaned)
       df$cleaned <- gsub(" aand", "maand", df$cleaned)
       df$cleaned <- gsub(" nnd", " mnd", df$cleaned)
       df$cleaned <- gsub("m nd", " mnd", df$cleaned)
       df$cleaned <- gsub(" nd", " mnd", df$cleaned)
-    #clean standardised entries
+    #clean dag [day]
+      df$cleaned <- gsub("dagem", "dagen", df$cleaned)
+      df$cleaned <- ifelse(grepl("m", df$cleaned) & grepl("dag", sub("m.*", '', df$cleaned)), sub("dagen", "jaren", df$cleaned), df$cleaned)
+      df$cleaned <- ifelse(grepl("m", df$cleaned) & grepl("dag", sub("m.*", '', df$cleaned)), sub("dgn", "jaren", df$cleaned), df$cleaned)
+      df$cleaned <- ifelse(grepl("dagen\\(", df$cleaned), sub("\\(.*", '', df$cleaned), df$cleaned)
+      #clean standardised entries
       #year
       df$year <- ifelse(grepl("j", df$cleaned), gsub("\\D", "", sub("j.*", '', df$cleaned)), df$year)
       df$cleaned <- ifelse(grepl("j", df$cleaned), sub(".*j", '', df$cleaned), df$cleaned)
       df$cleaned <- ifelse(grepl("\\d", df$cleaned)==F, "", df$cleaned)
+      df$year <- ifelse(is.na(df$year) & grepl("\\d,", df$cleaned), gsub("\\D", "", sub(",.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(is.na(df$year) & grepl("\\d,", df$cleaned), sub(".*,", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d\\.", substr(df$cleaned,1,3)), gsub("\\D", "", substr(df$cleaned,1,2)), df$year)
+      df$cleaned <- ifelse(grepl("\\d\\.", substr(df$cleaned,1,3)), substr(df$cleaned,4, nchar(df$cleaned)), df$cleaned)
+      #year not mentioned, but month is
+      df$year <- ifelse(grepl("\\d en \\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en \\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en \\d\\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en \\d\\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en  \\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en  \\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en  \\d\\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en  \\d\\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en \\dm", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en \\dm", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en \\d\\dm", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en \\d\\dm", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en\\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en\\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en\\d\\d m", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en\\d\\d m", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en\\dm", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en\\dm", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
+      df$year <- ifelse(grepl("\\d en\\d\\dm", df$cleaned), gsub("\\D", "", sub("en.*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d en\\d\\dm", df$cleaned), sub(".*en", '', df$cleaned), df$cleaned)
       #
-      df$year <- ifelse(df$cleaned=="1 en", 1, df$year)
-      df$cleaned <- ifelse(df$cleaned=="1 en", "", df$cleaned)
+      df$year <- ifelse(grepl("\\d \\d m", substr(df$cleaned,1,7)), gsub("\\D", "", sub(" .*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d \\d m", substr(df$cleaned,1,7)), substr(df$cleaned, 3, nchar(df$cleaned)), df$cleaned)
+      df$year <- ifelse(grepl("\\d \\d\\d m", substr(df$cleaned,1,7)), gsub("\\D", "", sub(" .*", '', df$cleaned)), df$year)
+      df$cleaned <- ifelse(grepl("\\d \\d\\d m", substr(df$cleaned,1,7)), substr(df$cleaned, 3, nchar(df$cleaned)), df$cleaned)
+      #
+      df$cleaned <- ifelse(grepl("\\d en \\d", df$cleaned), "", df$cleaned) #deletes undefined units of time
       #month
       df$month <- ifelse(grepl("m", df$cleaned), gsub("\\D", "", sub("m.*", '', df$cleaned)), df$month)
       df$cleaned <- ifelse(grepl("m", df$cleaned), sub(".*m", '', df$cleaned), df$cleaned)
@@ -701,15 +775,27 @@
       #
       df$day <- ifelse(df$cleaned!="" & grepl("j m w ", df$Var1), gsub("\\D", "", df$cleaned), df$day)
       df$cleaned <- ifelse(df$cleaned!="" & grepl("j m w ", df$Var1), "", df$cleaned)
-    #delete remaining
-      df[which(df$cleaned!=""),]
+    #clean remaining entries
+      #year
+      df$year <- ifelse(nchar(df$year)==4 & substr(df$year,1,2)==substr(df$year,3,4), substr(df$year,1,2), df$year)
+      df$year <- ifelse(nchar(df$year)==2 & substr(df$year,1,1)=="0", substr(df$year,2,2), df$year)
+      df$year <- ifelse(df$year=="000", 0, df$year)
+      df$year <- as.numeric(df$year)
+      df$year <- ifelse(df$year>120, NA, df$year)
+      #month
+      df$month <- as.numeric(df$month)
+      df$month <- ifelse(!is.na(df$year) & df$month>11, NA, df$month)
+      #day
+      df$day <- as.numeric(df$day)
+      df$day <- ifelse(!is.na(df$month) & df$day>30, NA, df$day)
+      df$day <- ifelse(!is.na(df$week) & df$day>6, NA, df$day)
+    #prepare merge
       df <- df[,c("Var1", "year", "month", "week", "day")]
       df[df==""] <- NA
-      df[df=="00"] <- 0
       colnames(df) <- c("Var1", paste0(gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), c("_year", "_month", "_week", "_day")))
       df
-    #clean remaining entries
-      df <- merge(db, df, by.x=gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), by.y="Var1")
+    #merge new variable to db
+      df <- merge(db, df, by.x=gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), by.y="Var1", all.x=T)
       df
     }
     
