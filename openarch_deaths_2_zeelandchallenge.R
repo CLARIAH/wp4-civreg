@@ -46,6 +46,8 @@ x = melt(openarch,
 
 # rm("openarch") # some operations below are mem hungry
 
+x[, id_person := .I]
+
 # variable -> role
 x[variable == 1, role := 10] # deceased
 x[variable == 2, role := 3] # father
@@ -93,12 +95,12 @@ x[, firstname := stringi::stri_trans_general(firstname, "Latin-ASCII")]
 x[, familyname := stringi::stri_trans_general(familyname, "Latin-ASCII")]
 x[, prefix := stringi::stri_trans_general(firstname, "Latin-ASCII")]
 
-x[, fullname := paste0(firstname, prefix, familyname, sep = " ")]
-fwrite(
-    x[fullname != ""][stri_detect_regex(fullname, "[^A-z\\s\\-.'’]"), .(unique(fullname))],
-    "badnames.csv",
-    append = TRUE)
-x[, fullname := NULL]
+# x[, fullname := paste0(firstname, prefix, familyname, sep = " ")]
+# fwrite(
+#     x[fullname != ""][stri_detect_regex(fullname, "[^A-z\\s\\-.'’]"), .(unique(fullname))],
+#     "badnames.csv",
+#     append = TRUE)
+# x[, fullname := NULL]
 
 # encoding check
 x[, all(validUTF8(firstname))]
@@ -116,6 +118,5 @@ x[, occupation := NA] # todo
 # x[, death_date_flag := NA]
 # x[, death_location := NA]
 
+fwrite(x, "openarch_persons_deaths.csv.gz")
 fwrite(x, "~/downloads/Zeeland_Challenge/openarch_persons_deaths.csv.gz")
-
-rm(list = ls())
