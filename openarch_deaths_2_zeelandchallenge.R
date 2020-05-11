@@ -5,9 +5,9 @@ rm(list = ls())
 library("data.table")
 library("stringi")
 
-target_vrbs = fread("LINKS_Zeeland_cleaned_2016_01_Persons.csv", nrow = 1, header = FALSE)
-target = fread(cmd = "iconv -f latin1 -t utf8 LINKS_Zeeland_cleaned_2016_01_Persons.csv | grep -P '^\\d+;\\d+;2'")
-openarch = fread(cmd = "gunzip -c openarch_death.csv.gz")
+setDTthreads(threads = 8)
+
+openarch = fread("/data/auke/civreg/openarch/openarch_death_nonduplids_ages.csv")
 
 openarch[, id_registration := .I]
 
@@ -27,12 +27,19 @@ openarch[is.na(death_date), death_date := registration_date]
 openarch[death_date_flag == 0 & !is.na(death_date), death_date_flag := 2]
 openarch[, .N, by = death_date_flag]
 
-# source_place is in there twice, identical though
+# set relevant variables to cleaned ones to preserve patterns
+openarch[, PR_AGE := PR_AGE_year]
+openarch[, PR_GENDER := PR_GENDER_2]
+openarch[, EVENT_PLACE := AMCO_EVENT_PLACE]
 
+openarch = openarch[, 
+    lapply(.SD, function(x) data.table::first(x[!is.na(x)])), 
+    by = CLARIAH_ID,
+    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_PLACE$|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$")]
+
+# source_place is in there twice, identical though
 x = melt(openarch, 
-    id.vars = c("id_registration", 
-                "death_date", 
-                "EVENT_PLACE"),
+    id.vars = c("id_registration", "CLARIAH_ID", "death_date", "EVENT_PLACE"),
     measure.vars = patterns(firstname = "_NAME_GN", 
                             prefix = "_NAME_SPRE",
                             familyname = "_NAME_SURN",
@@ -106,7 +113,7 @@ x[, prefix := stringi::stri_trans_general(firstname, "Latin-ASCII")]
 x[, all(validUTF8(firstname))]
 x[, all(validUTF8(familyname))]
 x[, all(validUTF8(prefix))]
-x[, all(validUTF8(death_location))]
+# x[, all(validUTF8(death_location))] now amco
 
 # type of source
 x[, registration_maintype := 3] # 2 marriage, 1 births, 3 deaths
@@ -119,4 +126,3 @@ x[, occupation := NA] # todo
 # x[, death_location := NA]
 
 fwrite(x, "openarch_persons_deaths.csv.gz")
-fwrite(x, "~/downloads/Zeeland_Challenge/openarch_persons_deaths.csv.gz")
