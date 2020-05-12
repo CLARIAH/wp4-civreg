@@ -7,7 +7,13 @@ library("stringi")
 
 setDTthreads(threads = 8)
 
-openarch = fread("/data/auke/civreg/openarch/openarch_death_nonduplids_ages.csv")
+openarch = fread("/data/auke/civreg/openarch/openarch_deaths_dedup.csv")
+
+# replace "" by NA for character variables
+for (j in 1:ncol(openarch)){
+    if (class(openarch[[j]]) != "character") next
+    set(x = openarch, i = which(openarch[[j]] == ""), j = j, NA)
+}
 
 openarch[, id_registration := .I]
 
@@ -32,19 +38,28 @@ openarch[, PR_AGE := PR_AGE_year]
 openarch[, PR_GENDER := PR_GENDER_2]
 openarch[, EVENT_PLACE := AMCO_EVENT_PLACE]
 
-openarch = openarch[, 
-    lapply(.SD, function(x) data.table::first(x[!is.na(x)])), 
-    by = CLARIAH_ID,
-    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_PLACE$|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$")]
+setkey(openarch, V1)
+
+# this takes about 10-15m
+openarch_deduplicated = openarch[duplicate == TRUE, 
+    lapply(.SD, function(x) x[!is.na(x)][1]), 
+    by = V1,
+    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_YEAR$|^EVENT_PLACE$|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$")]
+
+# minute or two
+openarch = rbindlist(
+    list(openarch[duplicate == FALSE],
+         openarch_deduplicated),
+    fill = TRUE)
 
 # source_place is in there twice, identical though
 x = melt(openarch, 
-    id.vars = c("id_registration", "CLARIAH_ID", "death_date", "EVENT_PLACE"),
-    measure.vars = patterns(firstname = "_NAME_GN", 
-                            prefix = "_NAME_SPRE",
-                            familyname = "_NAME_SURN",
+    id.vars = c("id_registration", "V1", "death_date", "EVENT_PLACE", "EVENT_YEAR"),
+    measure.vars = patterns(firstname = "_NAME_GN$", 
+                            prefix = "_NAME_SPRE$",
+                            familyname = "_NAME_SURN$",
                             # occupation
-                            age_year = "_AGE",
+                            age_year = "_AGE$",
                             bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
                             bir_month = "_BIR_MONTH",
                             bir_day = "_BIR_DAY",
@@ -72,6 +87,7 @@ x[, bir_day := NULL]
 # todo: see what info can be recovered
 
 setnames(x, "EVENT_PLACE", "death_location")
+setnames(x, "EVENT_YEAR", "death_year")
 
 # civil_status -> empty
 x[, civil_status := NA]
@@ -81,10 +97,11 @@ x[, civil_status := NA]
 x[, birth_date_flag := NA]
 
 # recode sex + impute from role
-x[sex == "Man", sex := "m"]
-x[sex == "Vrouw", sex := "f"]
-x[sex == "Onbekend", sex := "u"]
-x[sex == "", sex := NA]
+# first four unnecessary now that it is pre-standardised
+# x[sex == "Man", sex := "m"]
+# x[sex == "Vrouw", sex := "f"]
+# x[sex == "Onbekend", sex := "u"]
+# x[sex == "", sex := NA]
 x[is.na(sex) & role %in% c(2) & firstname != "" & familyname != "", 
     sex := "f"]
 x[is.na(sex) & role %in% c(3) & firstname != "" & familyname != "", 
@@ -100,7 +117,7 @@ x[, familyname := stringi::stri_trans_tolower(familyname)]
 # much time!
 x[, firstname := stringi::stri_trans_general(firstname, "Latin-ASCII")]
 x[, familyname := stringi::stri_trans_general(familyname, "Latin-ASCII")]
-x[, prefix := stringi::stri_trans_general(firstname, "Latin-ASCII")]
+x[, prefix := stringi::stri_trans_general(prefix, "Latin-ASCII")]
 
 # x[, fullname := paste0(firstname, prefix, familyname, sep = " ")]
 # fwrite(
