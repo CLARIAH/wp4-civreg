@@ -15,8 +15,8 @@
   
   #load functions
     clean_age <- function(db,AgeVar,NewVarName="cleaned"){
-      df <- as.data.frame(table(tolower(AgeVar)))
-      df$AgeVar <- df$Var1
+      df <- as.data.frame(table(AgeVar))
+      df$Var1 <- as.character(df$AgeVar)
     #remove entries that are not ages
       df$Var1 <- ifelse(df$Var1=="-", "", df$Var1) #remove missings indicated with -
       df$Var1 <- ifelse(df$Var1=="9999", "",df$Var1) #remove missings indicated with 9999
@@ -131,8 +131,8 @@
   
   #load functions
     clean_age_death <- function(db,AgeVar,NewVarName="cleaned"){
-      df <- as.data.frame(table(tolower(AgeVar)))
-      df$AgeVar <- df$Var1
+      df <- as.data.frame(table(AgeVar))
+      df$Var1 <- as.character(df$AgeVar)
     #make fields:
       df$cleaned <- tolower(df$Var1)
       df$year <- NA
@@ -205,8 +205,8 @@
       df$cleaned <- ifelse(grepl("\\d:ã", df$cleaned), "", df$cleaned) #entries starting with 0:ã ...
     #recode stillborn children
       df$day <- ifelse(grepl("levenl", df$cleaned), "1", df$day) #stillborn
-      df$cleaned <- ifelse(grepl("levenl", df$cleaned), "",df$cleaned) #stillborn
-      df$cleaned <- ifelse(grepl("dood", df$cleaned) & grepl("geb", df$cleaned), "",df$cleaned) #stillborn
+      df$cleaned <- ifelse(grepl("levenl", df$cleaned), "1",df$cleaned) #stillborn
+      df$cleaned <- ifelse(grepl("dood", df$cleaned) & grepl("geb", df$cleaned), "1",df$cleaned) #stillborn
     #recode short-lived children
       df$day <- ifelse(grepl("levend", df$cleaned), "1", df$day) #short-lived children
       df$cleaned <- ifelse(grepl("levend", df$cleaned), "",df$cleaned) #short-lived children
@@ -789,6 +789,16 @@
       df$day <- as.numeric(df$day)
       df$day <- ifelse(!is.na(df$month) & df$day>30, NA, df$day)
       df$day <- ifelse(!is.na(df$week) & df$day>6, NA, df$day)
+    #give 0 to NA y/m/w/d IF at last a y/m/w/d is available
+      df$year <- ifelse(is.na(df$year) & !is.na(df$month) | is.na(df$year) & !is.na(df$week) | is.na(df$year) & !is.na(df$day), 0, df$year)
+      df$month <- ifelse(is.na(df$month) & !is.na(df$year) | is.na(df$month) & !is.na(df$week) | is.na(df$month) & !is.na(df$day), 0, df$month)
+      df$week <- ifelse(is.na(df$week) & !is.na(df$year) | is.na(df$week) & !is.na(df$week) | is.na(df$week) & !is.na(df$day), 0, df$week)
+      df$day <- ifelse(is.na(df$day) & !is.na(df$year) | is.na(df$day) & !is.na(df$week) | is.na(df$day) & !is.na(df$day), 0, df$day)
+    #give NA IF y/m/w/d are all 0
+      df$year <- ifelse(df$year==0 & df$month==0 & df$week==0 & df$day==0, NA, df$year)
+      df$month <- ifelse(df$year==0 & df$month==0 & df$week==0 & df$day==0, NA, df$month)
+      df$week <- ifelse(df$year==0 & df$month==0 & df$week==0 & df$day==0, NA, df$week)
+      df$day <- ifelse(df$year==0 & df$month==0 & df$week==0 & df$day==0, NA, df$day)
     #prepare merge
       df <- df[,c("Var1", "year", "month", "week", "day")]
       df[df==""] <- NA
