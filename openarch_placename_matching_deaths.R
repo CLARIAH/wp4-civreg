@@ -109,6 +109,9 @@ top[, munic_st := stri_trans_general(munic_st, "Latin-ASCII")]
 places[, placeplace := paste0(EVENT_PLACE_ST,EVENT_PLACE_ST) ]
 top[, topmun := paste0(top_st,munic_st)]
 
+places[EVENT_PLACE_ST == "oploostanthonisenledeacker", 
+       placeplace := "oploooploostanthonisenledeacker",] # only municipality whose name is not among corresponding toponyms
+
 places[placeplace %in% top$topmun, match := 1, ]
 
 # merge places with top for match1
@@ -143,8 +146,8 @@ top[, topmun := paste0(top_st,munic_st)]
 places[EVENT_PLACE_ST %in% top$topmun & is.na(match), match := 2,]
 
 m2 <- places[match == 2, merge(places[,c("EVENT_PLACE", "EVENT_PLACE_ST", "N", "min_place_year", "max_place_year", "match")], 
-                                top[,c("toponym", "municipality", "topmun", "amco")], 
-                                by.x = "EVENT_PLACE_ST", by.y = "topmun", all.x = F, all.y = F)]
+                               top[,c("toponym", "municipality", "topmun", "amco")], 
+                               by.x = "EVENT_PLACE_ST", by.y = "topmun", all.x = F, all.y = F)]
 
 
 m2 <- m2[!duplicated(m2, fromLast=T),]
@@ -200,8 +203,8 @@ m4 <- places[match == 4,]
 
 
 m4 <- merge(m4[,c("EVENT_PLACE", "EVENT_PLACE_ST", "gem", "N", "min_place_year", "max_place_year", "match")], 
-                               top[,c("toponym", "municipality", "topmun", "amco")], 
-                               by.x = "gem", by.y = "topmun", all.x = F, all.y = F)
+            top[,c("toponym", "municipality", "topmun", "amco")], 
+            by.x = "gem", by.y = "topmun", all.x = F, all.y = F)
 
 
 m4 <- m4[!duplicated(m4, fromLast=T),]
@@ -211,7 +214,7 @@ m4[, id := NULL]
 
 # check if all matches are still there
 
-places[match == 4 & EVENT_PLACE %ni% m4$EVENT_PLACE,] # 1 remaining...
+places[match == 4 & EVENT_PLACE %ni% m4$EVENT_PLACE,] 
 
 # take out all remaining double placenames/amco for manual resolving and keep matches in m4
 
