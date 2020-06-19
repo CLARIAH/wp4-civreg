@@ -429,12 +429,115 @@ openarch_noamco[, province := NULL]
 # easily coded directly in certificate file
 
 todo <- openarch_noamco[is.na(amco), .N, list(EVENT_PLACE, EVENT_PLACE_ST,province)][order(-N)]
+
 fwrite(todo, "openarch/openarch_death_todo_placenames_afterm6.csv", sep = ";")
 
 ### bind noamco with openarch_amco
 
 openarch_matched <- rbind(openarch_amco, openarch_noamco)
 
-fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m6.csv.gz", sep = ";", row.names = F)
+### code placenames with N >= 5000 manually
 
-#check if hengelo has an amco
+# if multiple amco's for same choice (top/mun/prov or mun/prov or top/prov in descending order of priority): 
+# we go for the amco falling within the year range of the pn (mostly the older ones before 1960-90s merges)
+# check what HDNG does for these pn?
+
+openarch_matched[EVENT_PLACE == "Kollumerland c.a.", amco := 10984]
+openarch_matched[EVENT_PLACE == "Kollumerland c.a.", toponym := "Kollum"]
+openarch_matched[EVENT_PLACE == "Kollumerland c.a.", municipality := "Kollumerland en Nieuwkruisland"]
+
+openarch_matched[EVENT_PLACE == "Roosendaal - Nispen", amco := 10407]
+openarch_matched[EVENT_PLACE ==  "Roosendaal - Nispen", toponym := "Roosendaal en Nispen"]
+openarch_matched[EVENT_PLACE == "Roosendaal - Nispen", municipality := "Roosendaal en Nispen"]
+
+openarch_matched[EVENT_PLACE == "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Archief Delft", amco := 11133]
+openarch_matched[EVENT_PLACE ==  "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Archief Delft", toponym := "Rijswijk"]
+openarch_matched[EVENT_PLACE == "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Archief Delft", municipality := "Rijswijk"]
+
+openarch_matched[EVENT_PLACE == "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Brabants Historisch Informatie Centrum", amco := 11016]
+openarch_matched[EVENT_PLACE ==  "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Brabants Historisch Informatie Centrum", toponym := "Rijswijk"]
+openarch_matched[EVENT_PLACE == "Rijswijk" & SOURCEREFERENCE_INSTITUTIONNAME == "Brabants Historisch Informatie Centrum", municipality := "Rijswijk"]
+
+openarch_matched[EVENT_PLACE == "Almelo, Stad", amco := 11053]
+openarch_matched[EVENT_PLACE ==  "Almelo, Stad", toponym := "Almelo"]
+openarch_matched[EVENT_PLACE == "Almelo, Stad", municipality := "Almelo"]
+
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR <= 1913, amco := 11065]
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR <= 1913, toponym := "Ambt Almelo"]
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR <= 1913, municipality := "Ambt Almelo"]
+
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR >= 1914, amco := 11053]
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR >= 1914, toponym := "Ambt Almelo"]
+openarch_matched[EVENT_PLACE == "Almelo, Ambt" & EVENT_YEAR >= 1914, municipality := "Ambt Almelo"]
+
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Drents Archief", amco := 10839]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Drents Archief", toponym := "Hoogeveen"]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Drents Archief", municipality := "Hoogeveen"]
+
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Historisch Centrum Overijssel", amco := 10839]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Historisch Centrum Overijssel", toponym := "Hoogeveen"]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "Historisch Centrum Overijssel", municipality := "Hoogeveen"]
+
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "AlleGroningers", amco := 10839]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "AlleGroningers", toponym := "Hoogeveen"]
+openarch_matched[EVENT_PLACE == "Hoogeveen" & SOURCEREFERENCE_INSTITUTIONNAME == "AlleGroningers", municipality := "Hoogeveen"]
+
+openarch_matched[EVENT_PLACE == "Dinteloord", amco := 11193]
+openarch_matched[EVENT_PLACE == "Dinteloord", toponym := "Dinteloord"]
+openarch_matched[EVENT_PLACE == "Dinteloord", municipality := "Dinteloord en Prinsenland"]
+
+openarch_matched[EVENT_PLACE == "Serooskerke (Walcheren)", amco := 10369]
+openarch_matched[EVENT_PLACE == "Serooskerke (Walcheren)", toponym := "Serooskerke"]
+openarch_matched[EVENT_PLACE == "Serooskerke (Walcheren)", municipality := "Veere"]
+
+openarch_matched[EVENT_PLACE == "Blerick", amco := 10477]
+openarch_matched[EVENT_PLACE == "Blerick", toponym := "Hout-Blerick"]
+openarch_matched[EVENT_PLACE == "Blerick", municipality := "Venlo"]
+
+openarch_matched[EVENT_PLACE == "Vessem", amco := 11414 ]
+openarch_matched[EVENT_PLACE == "Vessem", toponym := "Vessem"]
+openarch_matched[EVENT_PLACE == "Vessem", municipality := "Vessem, Wintelre en Knegsel"]
+
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR <= 1919, amco := 10603 ]
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR <= 1919, toponym := "Doetinchem"]
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR <= 1919, municipality := "Stad Doetinchem"]
+
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR >= 1920, amco := 10396 ]
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR >= 1920, toponym := "Doetinchem"]
+openarch_matched[EVENT_PLACE == "Stad Doetinchem (Doetinchem)" & EVENT_YEAR >= 1920, municipality := "Doetinchem"]
+
+openarch_matched[EVENT_PLACE == "Ommerschans (Ommen, Stad)", amco := 11069 ]
+openarch_matched[EVENT_PLACE == "Ommerschans (Ommen, Stad)", toponym := "Ommerschans"]
+openarch_matched[EVENT_PLACE == "Ommerschans (Ommen, Stad)", municipality := "Ommen"]
+
+openarch_matched[EVENT_PLACE == "Delden, Stad", amco := 10913 ]
+openarch_matched[EVENT_PLACE == "Delden, Stad", toponym := "Delden"]
+openarch_matched[EVENT_PLACE == "Delden, Stad", municipality := "Stad Delden"]
+
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR <= 1919, amco := 11269 ]
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR <= 1919, toponym := "Gestel"]
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR <= 1919, municipality := "Gestel en Blaarthem"]
+
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR >= 1920, amco := 11298 ]
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR >= 1920, toponym := "Gestel"]
+openarch_matched[EVENT_PLACE == "Gestel" & EVENT_YEAR >= 1920, municipality := "Eindhoven"]
+
+openarch_matched[EVENT_PLACE == "Herwen en Aerdt (Rijnwaarden)", amco := 10819 ]
+openarch_matched[EVENT_PLACE == "Herwen en Aerdt (Rijnwaarden)", toponym := "Herwen en Aerdt"]
+openarch_matched[EVENT_PLACE == "Herwen en Aerdt (Rijnwaarden)", municipality := "Herwen en Aerdt"]
+
+openarch_matched[EVENT_PLACE == "Arcen", amco := 10202 ]
+openarch_matched[EVENT_PLACE == "Arcen", toponym := "Arcen"]
+openarch_matched[EVENT_PLACE == "Arcen", municipality := "Arcen en Velden"]
+
+
+# generate match # for these manual matches > 7
+
+
+openarch_matched[!is.na(amco) & is.na(match), match := 7]
+
+# write csv
+
+fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m7.csv.gz", sep = ";", row.names = F)
+
+
