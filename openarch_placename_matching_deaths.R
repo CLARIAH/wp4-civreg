@@ -418,6 +418,11 @@ setnames(openarch_noamco, "toponym.y", "toponym")
 
 openarch_noamco[!is.na(placeprov) & !is.na(amco) & is.na(match), match := 6]
 
+
+todo <- openarch_noamco[is.na(amco), .N, list(EVENT_PLACE, EVENT_PLACE_ST,province)][order(-N)]
+
+fwrite(todo, "openarch/openarch_death_todo_placenames_afterm6.csv", sep = ";")
+
 openarch_noamco[, placeprov := NULL]
 openarch_noamco[, municipality.x := NULL]
 openarch_noamco[, amco.x := NULL]
@@ -425,22 +430,20 @@ openarch_noamco[, toponym.x := NULL]
 openarch_noamco[, province := NULL]
 
 ### other combinations do not add much
+
 # check remaining todo's > seem to be combination of multiple amco's for same pn+province combination (Hoogeveen,ZH/ Hoogeveen,Dr)
-# easily coded directly in certificate file
-
-todo <- openarch_noamco[is.na(amco), .N, list(EVENT_PLACE, EVENT_PLACE_ST,province)][order(-N)]
-
-fwrite(todo, "openarch/openarch_death_todo_placenames_afterm6.csv", sep = ";")
+# easily coded manually
 
 ### bind noamco with openarch_amco
 
 openarch_matched <- rbind(openarch_amco, openarch_noamco)
 
-### code placenames with N >= 5000 manually
+rm(openarch_amco, openarch_noamco)
+
+### 7: code placenames with N >= 5000 manually
 
 # if multiple amco's for same choice (top/mun/prov or mun/prov or top/prov in descending order of priority): 
 # we go for the amco falling within the year range of the pn (mostly the older ones before 1960-90s merges)
-# check what HDNG does for these pn?
 
 openarch_matched[EVENT_PLACE == "Kollumerland c.a.", amco := 10984]
 openarch_matched[EVENT_PLACE == "Kollumerland c.a.", toponym := "Kollum"]
@@ -533,11 +536,10 @@ openarch_matched[EVENT_PLACE == "Arcen", municipality := "Arcen en Velden"]
 
 # generate match # for these manual matches > 7
 
-
 openarch_matched[!is.na(amco) & is.na(match), match := 7]
 
 # write csv
 
-fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m7.csv.gz", sep = ";", row.names = F)
+fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m7_ages.csv.gz", sep = ";", row.names = F)
 
 
