@@ -7,7 +7,8 @@ library("stringi")
 
 setDTthreads(threads = 8)
 
-openarch = fread("/data/auke/civreg/openarch/openarch_deaths_dedup.csv")
+# openarch = fread("/data/auke/civreg/openarch/openarch_deaths_dedup.csv")
+openarch = fread("gunzip -c openarch_deaths_dedup_amco_ages_sex.csv.gz")
 
 # replace "" by NA for character variables
 for (j in 1:ncol(openarch)){
@@ -36,15 +37,15 @@ openarch[, .N, by = death_date_flag]
 # set relevant variables to cleaned ones to preserve patterns
 openarch[, PR_AGE := PR_AGE_year]
 openarch[, PR_GENDER := PR_GENDER_2]
-openarch[, EVENT_PLACE := AMCO_EVENT_PLACE]
+openarch[, EVENT_PLACE := EVENT_PLACE_ST]
 
-setkey(openarch, V1)
+setkey(openarch, clarid)
 
 # this takes about 10-15m
 openarch_deduplicated = openarch[duplicate == TRUE, 
     lapply(.SD, function(x) x[!is.na(x)][1]), 
-    by = V1,
-    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_YEAR$|^EVENT_PLACE$|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$")]
+    by = clarid,
+    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_YEAR$|^EVENT_PLACE$|amco|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$|_OCCUPATION$")]
 
 # minute or two
 openarch = rbindlist(
@@ -54,19 +55,20 @@ openarch = rbindlist(
 
 # source_place is in there twice, identical though
 x = melt(openarch, 
-    id.vars = c("id_registration", "V1", "death_date", "EVENT_PLACE", "EVENT_YEAR"),
+    id.vars = c("id_registration", "clarid", "death_date", "EVENT_PLACE", "EVENT_YEAR"),
     measure.vars = patterns(firstname = "_NAME_GN$", 
                             prefix = "_NAME_SPRE$",
                             familyname = "_NAME_SURN$",
-                            # occupation
                             age_year = "_AGE$",
+                            occupation = "_OCCUPATION$",
                             bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
                             bir_month = "_BIR_MONTH",
                             bir_day = "_BIR_DAY",
                             birth_location = "_BIR_PLACE",
-                            sex = "_GENDER"))
-
+                            sex = "_GENDER$"))
+dim(x)
 # rm("openarch") # some operations below are mem hungry
+x[, .N, by = variable]
 
 x[, id_person := .I]
 
@@ -74,8 +76,11 @@ x[, id_person := .I]
 x[variable == 1, role := 10] # deceased
 x[variable == 2, role := 3] # father
 x[variable == 3, role := 2] # mother
-# reporter never included?
-x[, variable := NULL]
+
+# quick check
+x[role == 10 & age_year == 0, .N] == openarch[PR_AGE == 0, .N]
+x[role == 10 & age_year == 10, .N] == openarch[PR_AGE == 10, .N]
+x[role == 10 & age_year == 23, .N] == openarch[PR_AGE == 23, .N]
 
 x[, birth_date := as.Date(
     stri_join(bir_year, "-", bir_month, "-", bir_day),
@@ -106,7 +111,6 @@ x[is.na(sex) & role %in% c(2) & firstname != "" & familyname != "",
     sex := "f"]
 x[is.na(sex) & role %in% c(3) & firstname != "" & familyname != "", 
     sex := "m"]
-# is.na(firstname)
 
 # tolower
 x[, firstname := stringi::stri_trans_tolower(firstname)]
@@ -116,8 +120,8 @@ x[, familyname := stringi::stri_trans_tolower(familyname)]
 # strip diacretics
 # much time!
 x[, firstname := stringi::stri_trans_general(firstname, "Latin-ASCII")]
-x[, familyname := stringi::stri_trans_general(familyname, "Latin-ASCII")]
 x[, prefix := stringi::stri_trans_general(prefix, "Latin-ASCII")]
+x[, familyname := stringi::stri_trans_general(familyname, "Latin-ASCII")]
 
 # x[, fullname := paste0(firstname, prefix, familyname, sep = " ")]
 # fwrite(
@@ -135,11 +139,9 @@ x[, all(validUTF8(prefix))]
 # type of source
 x[, registration_maintype := 3] # 2 marriage, 1 births, 3 deaths
 
-x[, death := "n"] # always no/unknown
-x[, stillbirth := NA]
-x[, occupation := NA] # todo
-# x[, death_year := NA]
-# x[, death_date_flag := NA]
-# x[, death_location := NA]
+x[, death := "n"]
+x[role != 10 & !is.na(age_year), death := "a"]
+x[role != 10 & !is.na(occupation) & occupation != "geen beroep vermeld", death := "a"]
+x[, stillbirth := NA] # todo: get this out of EVENT_REMARK "levenloos"
 
-fwrite(x, "openarch_persons_deaths.csv.gz")
+fwrite(x, "openarch_persons_deaths.csv.gz", compress = "gzip")
