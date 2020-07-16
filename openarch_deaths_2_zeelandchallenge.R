@@ -61,6 +61,7 @@ x = melt(openarch,
                             familyname = "_NAME_SURN$",
                             age_year = "_AGE$",
                             occupation = "_OCCUPATION$",
+                            amco = "amco",
                             bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
                             bir_month = "_BIR_MONTH",
                             bir_day = "_BIR_DAY",
