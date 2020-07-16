@@ -55,13 +55,12 @@ openarch = rbindlist(
 
 # source_place is in there twice, identical though
 x = melt(openarch, 
-    id.vars = c("id_registration", "clarid", "death_date", "EVENT_PLACE", "EVENT_YEAR"),
+    id.vars = c("id_registration", "clarid", "death_date", "EVENT_PLACE", "amco", "EVENT_YEAR"),
     measure.vars = patterns(firstname = "_NAME_GN$", 
                             prefix = "_NAME_SPRE$",
                             familyname = "_NAME_SURN$",
                             age_year = "_AGE$",
                             occupation = "_OCCUPATION$",
-                            amco = "amco",
                             bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
                             bir_month = "_BIR_MONTH",
                             bir_day = "_BIR_DAY",
