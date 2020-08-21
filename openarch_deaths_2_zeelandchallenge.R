@@ -12,8 +12,8 @@ openarch = fread("gunzip -c openarch_deaths_dedup_amco_ages_sex.csv.gz")
 
 # replace "" by NA for character variables
 for (j in 1:ncol(openarch)){
-    if (class(openarch[[j]]) != "character") next
-    set(x = openarch, i = which(openarch[[j]] == ""), j = j, NA)
+  if (class(openarch[[j]]) != "character") next
+  set(x = openarch, i = which(openarch[[j]] == ""), j = j, NA)
 }
 
 openarch[, id_registration := .I]
@@ -21,12 +21,12 @@ openarch[, id_registration := .I]
 # as.Date fastest
 # NA propagates in as.Date, though maybe something is to be said for making something out of year/month
 openarch[, death_date := as.Date(
-    stri_join(EVENT_YEAR, "-", EVENT_MONTH, "-", EVENT_DAY),
-    format = "%Y-%m-%d")]
+  stri_join(EVENT_YEAR, "-", EVENT_MONTH, "-", EVENT_DAY),
+  format = "%Y-%m-%d")]
 
 openarch[, registration_date := as.Date(
-    stri_join(SOURCE_DATE_YEAR, "-", SOURCE_DATE_MONTH, "-", SOURCE_DATE_DAY),
-    format = "%Y-%m-%d")]
+  stri_join(SOURCE_DATE_YEAR, "-", SOURCE_DATE_MONTH, "-", SOURCE_DATE_DAY),
+  format = "%Y-%m-%d")]
 
 # proxy marriage from registration date and flag
 openarch[, death_date_flag := ifelse(is.na(death_date), 0, 1)]
@@ -43,29 +43,29 @@ setkey(openarch, clarid)
 
 # this takes about 10-15m
 openarch_deduplicated = openarch[duplicate == TRUE, 
-    lapply(.SD, function(x) x[!is.na(x)][1]), 
-    by = clarid,
-    .SDcols = patterns("^id_registration$|^death_date$|^EVENT_YEAR$|^EVENT_PLACE$|amco|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$|_OCCUPATION$")]
+                                 lapply(.SD, function(x) x[!is.na(x)][1]), 
+                                 by = clarid,
+                                 .SDcols = patterns("^id_registration$|^death_date$|^EVENT_YEAR$|^EVENT_PLACE$|amco|match|_NAME_GN$|_NAME_SPRE$|_NAME_SURN$|_AGE$|_BIR_YEAR$|_BIR_MONTH$|_BIR_DAY$|_BIR_PLACE$|_GENDER$|_OCCUPATION$")]
 
 # minute or two
 openarch = rbindlist(
-    list(openarch[duplicate == FALSE],
-         openarch_deduplicated),
-    fill = TRUE)
+  list(openarch[duplicate == FALSE],
+       openarch_deduplicated),
+  fill = TRUE)
 
 # source_place is in there twice, identical though
 x = melt(openarch, 
-    id.vars = c("id_registration", "clarid", "death_date", "EVENT_PLACE", "amco", "EVENT_YEAR"),
-    measure.vars = patterns(firstname = "_NAME_GN$", 
-                            prefix = "_NAME_SPRE$",
-                            familyname = "_NAME_SURN$",
-                            age_year = "_AGE$",
-                            occupation = "_OCCUPATION$",
-                            bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
-                            bir_month = "_BIR_MONTH",
-                            bir_day = "_BIR_DAY",
-                            birth_location = "_BIR_PLACE",
-                            sex = "_GENDER$"))
+         id.vars = c("id_registration", "clarid", "death_date", "EVENT_PLACE","amco", "EVENT_YEAR"),
+         measure.vars = patterns(firstname = "_NAME_GN$", 
+                                 prefix = "_NAME_SPRE$",
+                                 familyname = "_NAME_SURN$",
+                                 age_year = "_AGE$",
+                                 occupation = "_OCCUPATION$",
+                                 bir_year = "_BIR_YEAR", # maybe prebake this, only bride and groom
+                                 bir_month = "_BIR_MONTH",
+                                 bir_day = "_BIR_DAY",
+                                 birth_location = "_BIR_PLACE",
+                                 sex = "_GENDER$"))
 dim(x)
 # rm("openarch") # some operations below are mem hungry
 x[, .N, by = variable]
@@ -83,8 +83,8 @@ x[role == 10 & age_year == 10, .N] == openarch[PR_AGE == 10, .N]
 x[role == 10 & age_year == 23, .N] == openarch[PR_AGE == 23, .N]
 
 x[, birth_date := as.Date(
-    stri_join(bir_year, "-", bir_month, "-", bir_day),
-    format = "%Y-%m-%d")]
+  stri_join(bir_year, "-", bir_month, "-", bir_day),
+  format = "%Y-%m-%d")]
 x[, bir_year := NULL]
 x[, bir_month := NULL]
 x[, bir_day := NULL]
@@ -108,9 +108,9 @@ x[, birth_date_flag := NA]
 # x[sex == "Onbekend", sex := "u"]
 # x[sex == "", sex := NA]
 x[is.na(sex) & role %in% c(2) & firstname != "" & familyname != "", 
-    sex := "f"]
+  sex := "f"]
 x[is.na(sex) & role %in% c(3) & firstname != "" & familyname != "", 
-    sex := "m"]
+  sex := "m"]
 
 # tolower
 x[, firstname := stringi::stri_trans_tolower(firstname)]
@@ -144,4 +144,4 @@ x[role != 10 & !is.na(age_year), death := "a"]
 x[role != 10 & !is.na(occupation) & occupation != "geen beroep vermeld", death := "a"]
 x[, stillbirth := NA] # todo: get this out of EVENT_REMARK "levenloos"
 
-fwrite(x, "openarch_persons_deaths.csv.gz", compress = "gzip")
+fwrite(x, "openarch/openarch2links/openarch_persons_deaths_v2.csv.gz", compress = "gzip")
