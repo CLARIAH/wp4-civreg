@@ -555,6 +555,7 @@ openarch_matched[!is.na(amco) & is.na(match), match := 7]
 
 # write csv
 
-fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m7_ages.csv.gz", sep = ";", row.names = F)
+fwrite(openarch_matched, "openarch/openarch_deaths_placenames_standardized.csv.gz", sep = ";", row.names = F)
+
 
 
