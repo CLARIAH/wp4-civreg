@@ -533,6 +533,14 @@ openarch_matched[EVENT_PLACE == "Arcen", amco := 10202 ]
 openarch_matched[EVENT_PLACE == "Arcen", toponym := "Arcen"]
 openarch_matched[EVENT_PLACE == "Arcen", municipality := "Arcen en Velden"]
 
+openarch_matched[grepl("deldenstad", EVENT_PLACE_ST), amco := 10913 ]
+openarch_matched[grepl("deldenstad", EVENT_PLACE_ST), toponym := "Delden"]
+openarch_matched[grepl("deldenstad", EVENT_PLACE_ST), municipality := "Stad Delden"]
+
+openarch_matched[grepl("deldenambt", EVENT_PLACE_ST), amco := 11400 ]
+openarch_matched[grepl("deldenambt", EVENT_PLACE_ST), toponym := "Ambt Delden"]
+openarch_matched[grepl("deldenambt", EVENT_PLACE_ST), municipality := "Ambt Delden"]
+
 
 # generate match # for these manual matches > 7
 
@@ -540,6 +548,6 @@ openarch_matched[!is.na(amco) & is.na(match), match := 7]
 
 # write csv
 
-fwrite(openarch_matched, "openarch/openarch_death_nonduplids_amcom1m7_ages.csv.gz", sep = ";", row.names = F)
+fwrite(openarch_matched, "openarch/openarch_death_placenames_standardized.csv.gz", sep = ";", row.names = F)
 
 
