@@ -84,6 +84,18 @@ deaths_dedup[!is.na(rowid.x), duplicate := TRUE]
 deaths_dedup[, uniqueN(clarid)]
 # so 12m deaths after dedup
 
+# still some duplicates, identified by identical SOURCE_DIGITAL_ORIGINAL (ca. 86k)
+
+# first seperate missing SOURCE_DIGITAL_ORIGINAL
+
+deaths_nourl <- deaths_dedup[SOURCE_DIGITAL_ORIGINAL != "",]
+
+# order remaining to keep most recent death year (some have no dates at all)
+
+deaths_dedup <- deaths_dedup[order(SOURCE_DIGITAL_ORIGINAL, EVENT_YEAR, decreasing = TRUE),]
+deaths_dedup <- deaths_dedup[!duplicated(SOURCE_DIGITAL_ORIGINAL) ,]
+deaths_dedup <- rbind(deaths_dedup, deaths_nourl) # should give appr. 11.9 million
+
 # sample a couple of duplicates to see if all makes sense
 out = deaths_dedup[duplicate == TRUE
     ][ clarid %in% sample(clarid, 100)
