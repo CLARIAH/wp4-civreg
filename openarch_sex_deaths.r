@@ -1,4 +1,4 @@
-## openarch death retrieve sex by given name
+## openarch death retrieve sex by given name for known sexes
 
 rm(list = ls())
 setwd("~/02. Werk/Clariah")
