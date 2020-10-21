@@ -88,7 +88,7 @@ deaths_dedup[, uniqueN(clarid)]
 
 # first seperate missing SOURCE_DIGITAL_ORIGINAL
 
-deaths_nourl <- deaths_dedup[SOURCE_DIGITAL_ORIGINAL != "",]
+deaths_nourl <- deaths_dedup[SOURCE_DIGITAL_ORIGINAL == "",]
 
 # order remaining to keep most recent death year (some have no dates at all)
 
