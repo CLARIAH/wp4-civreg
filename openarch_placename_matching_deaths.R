@@ -341,6 +341,8 @@ openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "Stadsarchief Rotterdam", pr
 openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "Streekarchief Voorne-Putten", province := "Zuid-Holland"]
 openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "West Brabants Archief", province := "Noord-Holland"]
 openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "Zeeuws Archief", province := "Zeeland"]
+openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "Drents Archief", province := "Drenthe"]
+openarch_noamco[ SOURCEREFERENCE_INSTITUTIONNAME == "Streekarchief Langstraat Heusden Altena", province := "Noord-Brabant"]
 
 # 5: match placeprov with munprov
 
