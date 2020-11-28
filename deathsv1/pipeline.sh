@@ -19,5 +19,7 @@ Rscript --verbose openarch_placename_matching_deaths.R > openarch_placename_matc
 Rscript --verbose 'Standardize ages in openarch_csv_per_certificatetype.R' > 'Standardize ages in openarch_csv_per_certificatetype.Rout' 2>&1
 
 # impute sex from names
+Rscript --verbose openarch_death_sex.R > openarch_death_sex.Rout 2>&1
+
 
 # deduplicate
