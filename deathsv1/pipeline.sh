@@ -16,6 +16,7 @@ Rscript --verbose openarch_csv_per_certificatetype.R $v2020jan20 > openarch_csv_
 Rscript --verbose openarch_placename_matching_deaths.R > openarch_placename_matching_deaths.Rout 2>&1
 
 # standardise ages
+Rscript --verbose 'Standardize ages in openarch_csv_per_certificatetype.R' > 'Standardize ages in openarch_csv_per_certificatetype.Rout' 2>&1
 
 # impute sex from names
 
