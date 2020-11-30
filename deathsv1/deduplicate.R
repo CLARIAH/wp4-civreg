@@ -2,13 +2,22 @@ library("data.table")
 library("stringi")
 library("stringdist")
 
-setDTthreads(threads = 8)
+setDTthreads(threads = 2)
 
-deaths = data.table::fread("C:\\Users\\Ruben\\Desktop\\openarch\\death\\openarch_deaths_amco_ages_sex.csv.gz")
+deaths = data.table::fread(cmd = "gunzip -c openarch_deaths_amco_ages_sex.csv.gz")
 cases = nrow(deaths)
 
-# deduplication using string distances
-# first an estimate of the number of candidates
+# still some duplicates, identified by identical SOURCE_DIGITAL_ORIGINAL (ca. 86k)
+deaths = rbindlist(
+    list(
+        deaths[SOURCE_DIGITAL_ORIGINAL != "" ][ 
+            order(-EVENT_YEAR) ][ # keep earliest instance
+            !duplicated(SOURCE_DIGITAL_ORIGINAL)],
+        deaths[SOURCE_DIGITAL_ORIGINAL == ""]
+    )
+)
+
+# further deduplication using string distances on names
 deaths[, rowid := .I] # id to track duplicates
 
 # blocking key
@@ -63,9 +72,8 @@ dupls = candidates[firsim * sursim > 0.8 & rowid.y != rowid.x,
     .(clarid = c(unique(rowid.x), unique(rowid.y))),
     by = rowid.x]
 
-# before merging this back in, we need to get address  that duplicates
-# have been listed from both IDs; solution is to order dataset and then
-# depuplicate the duplicates ¯\_(ツ)_/¯
+# before merging this back in, we need to get address that duplicates
+# have been listed from both IDs; solution is to order dataset and take unique
 setorder(dupls, rowid.x)
 dupls = unique(dupls, by = "clarid")
 
@@ -84,23 +92,12 @@ deaths_dedup[!is.na(rowid.x), duplicate := TRUE]
 deaths_dedup[, uniqueN(clarid)]
 # so 12m deaths after dedup
 
-# still some duplicates, identified by identical SOURCE_DIGITAL_ORIGINAL (ca. 86k)
-
 # first seperate missing SOURCE_DIGITAL_ORIGINAL
-
-deaths_nourl <- deaths_dedup[SOURCE_DIGITAL_ORIGINAL == "",]
-
-# order remaining to keep most recent death year (some have no dates at all)
-
-deaths_dedup <- deaths_dedup[order(SOURCE_DIGITAL_ORIGINAL, EVENT_YEAR, decreasing = TRUE),]
-deaths_dedup <- deaths_dedup[!duplicated(SOURCE_DIGITAL_ORIGINAL) ,]
-deaths_dedup <- rbind(deaths_dedup, deaths_nourl) # should give appr. 11.9 million
-
 # sample a couple of duplicates to see if all makes sense
 out = deaths_dedup[duplicate == TRUE
     ][ clarid %in% sample(clarid, 100)
     ][ order(clarid), 
         .(regid, PR_NAME_GN_ST, PR_NAME_SURN, PR_AGE_year, PR_FTHR_NAME_SURN, PR_MTHR_NAME_SURN)]
-fwrite(out, "~/civreg/openarch/deathduplicates.csv")
+fwrite(out, "example_duplicates.csv")
 
-fwrite(deaths_dedup, "C:\\Users\\Ruben\\Desktop\\openarch\\death\\openarch_deaths_clean.csv.gz")
+fwrite(deaths_dedup, "openarch_deaths_clean.csv.gz")

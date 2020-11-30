@@ -9,7 +9,7 @@ v2020jan20=openarch_bso_url_list_januari2020.txt
 vtoday=bso_urls.txt
 
 # fetch csvs from openarch
-# set
+# set first argument to vtoday to get a new set straight from openarch
 Rscript --verbose openarch_csv_per_certificatetype.R $v2020jan20 > openarch_csv_per_certificatetype.Rout 2>&1
 
 # standardise placenames
@@ -21,5 +21,5 @@ Rscript --verbose 'Standardize ages in openarch_csv_per_certificatetype.R' > 'St
 # impute sex from names
 Rscript --verbose openarch_death_sex.R > openarch_death_sex.Rout 2>&1
 
-
 # deduplicate
+Rscript --verbose deduplicate.R > deduplicate.Rout 2>&1
