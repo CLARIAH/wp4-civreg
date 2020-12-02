@@ -48,15 +48,6 @@ deaths191030[!is.na(HISCO), .N] # 99% of cert with occtitles coded into hisco
 deaths191030[, sum(!is.na(HISCO)) / .N] # 99% of cert with occtitles coded into hisco
 
 tail(deaths191030[, .N, by = list(HISCO)][order(N)], 10)
-deaths191030[HISCO == 61220, .(occtitle, occtitle_st)]
-hsnhisco[HISCO == 61220, ]
-deaths191030[HISCO == 99900, .(occtitle, occtitle_st)]
-hsnhisco[HISCO == 99900, ]
-deaths191030[HISCO == 41025, .(occtitle, occtitle_st)]
-hsnhisco[HISCO == 41025, ]
-deaths191030[HISCO == -3, .(occtitle, occtitle_st)]
-deaths191030[occtitle_st == ""]
-hsnhisco[HISCO == -3, ]
 
 # add n > 100 without hisco manually (female occs)
 
