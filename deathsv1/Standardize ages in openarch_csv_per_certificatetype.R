@@ -4,21 +4,27 @@
 
 library("data.table")
 
+setDTthreads(2)
+
+dataset = commandArgs(trailingOnly = TRUE)
 
 # Open data sets
 # Birth <- fread("openarch_birth.csv.gz")
 # Marriage <- fread("openarch_marriage.csv.gz")
-Death <- fread(cmd = "gunzip -c openarch_deaths_amco.csv.gz")
+openarch <- fread(dataset)
 
 # load functions
 clean_age <- function(db,AgeVar,NewVarName="cleaned"){
-    if (all(is.na(AgeVar))){
-        warning("No non-missing values, returning original dataset")
+
+    toclean = db[, get(AgeVar)]
+
+    if (all(is.na(toclean))){
+        warning("No non-missing values in ", AgeVar, " returning original dataset")
         return(db)
     }
 
-    df <- as.data.frame(table(AgeVar))
-    df$Var1 <- as.character(df$AgeVar)
+    df <- as.data.frame(table(toclean))
+    df$Var1 <- as.character(df$toclean)
     
     # remove entries that are not ages
     df$Var1 <- ifelse(df$Var1=="-", "", df$Var1) # remove missings indicated with -
@@ -130,25 +136,27 @@ clean_age <- function(db,AgeVar,NewVarName="cleaned"){
     df$Var1 <- ifelse(df$Var1=="", df$Var1,
                    ifelse(as.numeric(df$Var1)>100 | as.numeric(df$Var1)<13, "", df$Var1))
     if(NewVarName=="cleaned"){
-        colnames(df)[3] <- paste0(gsub(paste0(deparse(substitute(db)),"\\$"), "", deparse(substitute(AgeVar))),"_cleaned")
-        df <- df[,c("AgeVar", paste0(gsub(paste0(deparse(substitute(db)),"\\$"), "", deparse(substitute(AgeVar))),"_cleaned"))]
+        colnames(df)[3] <- paste0(AgeVar,"_cleaned")
+        df <- df[,c("toclean", paste0(AgeVar,"_cleaned"))]
     }
     else{
         colnames(df)[3] <- NewVarName
-        df <- df[,c("AgeVar", NewVarName)]
+        df <- df[,c("toclean", NewVarName)]
     }
-    df <- merge(db, df, by.x=gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), by.y="AgeVar")
+    df <- merge(db, df, by.x=AgeVar, by.y="toclean")
     df
 }
   
 clean_age_death <- function(db,AgeVar,NewVarName="cleaned"){
-    if (all(is.na(AgeVar))){
-        warning("No non-missing values, returning original dataset")
+    toclean = db[, get(AgeVar)]
+
+    if (all(is.na(toclean))){
+        warning("No non-missing values in ", AgeVar, " returning original dataset")
         return(db)
     }
     
-    df <- as.data.frame(table(AgeVar))
-    df$Var1 <- as.character(df$AgeVar)
+    df <- as.data.frame(table(toclean))
+    df$Var1 <- as.character(df$toclean)
 
     # make fields:
     df$cleaned <- tolower(df$Var1)
@@ -895,23 +903,29 @@ clean_age_death <- function(db,AgeVar,NewVarName="cleaned"){
     # prepare merge
     df <- df[,c("Var1", "year", "month", "week", "day")]
     df[df==""] <- NA
-    colnames(df) <- c("Var1", paste0(gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), c("_year", "_month", "_week", "_day")))
+    # colnames(df) <- c("Var1", paste0(gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), c("_year", "_month", "_week", "_day")))
+    colnames(df) <- c("Var1", paste0(AgeVar, c("_year", "_month", "_week", "_day")))
     df
 
     # merge new variable to db
-    df <- merge(db, df, by.x=gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), by.y="Var1", all.x=T)
+    # df <- merge(db, df, by.x=gsub(paste0(deparse(substitute(db)),"\\$")  , "", deparse(substitute(AgeVar))), by.y="Var1", all.x=T)
+    df <- merge(db, df, by.x=AgeVar, by.y="Var1", all.x=T)
     df
 }
     
 
-# run functions on Death certificates
-Death <- clean_age_death(Death, Death$PR_AGE)
-Death <- clean_age(Death, Death$PR_FTHR_AGE)
-Death <- clean_age(Death, Death$PR_MTHR_AGE)
+agevars = c("PR_AGE", "PR_FTHR_AGE", "PR_MTHR_AGE", "GROOM_AGE", "BRIDE_AGE", 
+    "GROOM_MTHR_AGE", "GROOM_FTHR_AGE", "BRIDE_FTHR_AGE", "BRIDE_MTHR_AGE")
+for (agevar in agevars){
+    if (agevar %in% names(openarch)){
+        if (grepl("death", dataset)){
+            openarch = clean_age_death(openarch, agevar)
+        }
+        openarch = clean_age(openarch, agevar)
+    }
+}
 
 # save output
 fwrite(
-    x = Death,
-    file = "openarch_deaths_amco_ages.csv.gz", 
-    compress = "gzip")
-
+    x = openarch,
+    file = dataset)

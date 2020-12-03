@@ -1,9 +1,11 @@
 library("data.table")
 library("stringi")
 
-setDTthreads(threads = 3)
+setDTthreads(threads = 2)
 
-openarch = fread("gunzip -c openarch_death.csv.gz") 
+dataset = commandArgs(trailingOnly = TRUE)
+
+openarch = fread(dataset) 
 
 # EVENT_PLACE != SOURCE_PLACE #1,970,831, but in most cases just spelling differences or more detail
 # EVENT_PLACE == SOURCE_PLACE # 13,183,002
@@ -32,7 +34,7 @@ openarch[!is.na(EVENT_PLACE_ST), max_place_year := max(EVENT_YEAR, na.rm=T), by 
 
 places <- openarch[!is.na(EVENT_PLACE_ST), .N, list(EVENT_PLACE, EVENT_PLACE_ST, min_place_year, max_place_year)][order(-N)]
 
-fwrite(places, "openarch_death_placenames.csv", sep = ";", row.names = F)
+fwrite(places, "openarch_placenames.csv", sep = ";", row.names = F)
 
 ### Toponymen file IISG (https://iisg.amsterdam/en/hsn/data/place-names)
 # local version, but still with awful encoding misery
@@ -247,13 +249,13 @@ openarch_places_matched <- openarch_places_matched[!is.na(amco)]
 
 ### write to csv
 
-fwrite(openarch_places_matched, "openarch_death_places_matched.csv", sep = ";")
-fwrite(openarch_places_conflicts, "openarch_death_places_conflicts.csv", sep = ";")
-fwrite(openarch_places_todo, "openarch_death_places_todo.csv", sep = ";")
+fwrite(openarch_places_matched, "openarch_places_matched.csv", sep = ";")
+fwrite(openarch_places_conflicts, "openarch_places_conflicts.csv", sep = ";")
+fwrite(openarch_places_todo, "openarch_places_todo.csv", sep = ";")
 
 ### use matched file to get amco's for death certificates
 
-openarch_places_matched <- fread("openarch_death_places_matched.csv")
+openarch_places_matched <- fread("openarch_places_matched.csv")
 
 keep = !duplicated(colnames(openarch))
 openarch <- openarch[, ..keep, with = FALSE] # remove duplicated cols before merge (EVENT_TYPE & SOURCE_PLACE)
@@ -413,7 +415,7 @@ openarch_noamco[!is.na(placeprov) & !is.na(amco) & is.na(match), match := 6]
 
 todo <- openarch_noamco[is.na(amco), .N, list(EVENT_PLACE, EVENT_PLACE_ST,province)][order(-N)]
 
-fwrite(todo, "openarch_death_todo_placenames_afterm6.csv", sep = ";")
+fwrite(todo, "openarch_todo_placenames_afterm6.csv", sep = ";")
 
 openarch_noamco[, placeprov := NULL]
 openarch_noamco[, municipality.x := NULL]
@@ -547,6 +549,4 @@ openarch_matched[!is.na(amco) & is.na(match), match := 7]
 
 fwrite(
     x = openarch_matched, 
-    file = "openarch_deaths_amco.csv.gz", 
-    sep = ";", 
-    compress = "gzip")
+    file = dataset)

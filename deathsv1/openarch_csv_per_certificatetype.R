@@ -5,8 +5,11 @@
 library(data.table)
 setDTthreads(threads = 3)
 
-urls = commandArgs(trailingOnly = TRUE)
+args = commandArgs(trailingOnly = TRUE)
+urls = args[1]
 cat(urls)
+dataset = args[2]
+cat(dataset)
 
 
 urls <- readLines(urls)
@@ -44,6 +47,5 @@ openarch_death <- openarch_death[!duplicated(openarch_death), ]
 #openarch_death <- openarch_death[!duplicated(SOURCE_DIGITAL_ORIGINAL) ,]
 
 fwrite(openarch_death, 
-       "openarch_death.csv.gz", 
-       compress = "gzip",
-       sep=";", row.names = FALSE, na = "")
+       dataset,
+       verbose = TRUE)

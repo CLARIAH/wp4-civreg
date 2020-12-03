@@ -4,25 +4,31 @@ library("stringdist")
 
 setDTthreads(threads = 2)
 
-deaths = data.table::fread(cmd = "gunzip -c openarch_deaths_amco_ages_sex.csv.gz")
-cases = nrow(deaths)
+args = commandArgs(trailingOnly = TRUE)
+dataset = args[1]
+namevars = args[2:length(args)]
+namevars = c("GROOM_NAME_GN", "GROOM_NAME_SURN")
+
+
+opeanarch = data.table::fread(dataset)
+cases = nrow(opeanarch)
 
 # still some duplicates, identified by identical SOURCE_DIGITAL_ORIGINAL (ca. 86k)
-deaths = rbindlist(
+opeanarch = rbindlist(
     list(
-        deaths[SOURCE_DIGITAL_ORIGINAL != "" ][ 
+        opeanarch[SOURCE_DIGITAL_ORIGINAL != "" ][ 
             order(-EVENT_YEAR) ][ # keep earliest instance
             !duplicated(SOURCE_DIGITAL_ORIGINAL)],
-        deaths[SOURCE_DIGITAL_ORIGINAL == ""]
+        opeanarch[SOURCE_DIGITAL_ORIGINAL == ""]
     )
 )
 
 # further deduplication using string distances on names
-deaths[, rowid := .I] # id to track duplicates
+opeanarch[, rowid := .I] # id to track duplicates
 
 # blocking key
-deaths[, regid := paste(
-    "o", 
+opeanarch[, regid := paste(
+    "o", # still useful?
     EVENT_YEAR,
     EVENT_MONTH,
     EVENT_DAY,
@@ -32,22 +38,27 @@ deaths[, regid := paste(
     sep = "_")]
 
 # check resulting number of candidates for comparison
-deaths[, count := .N, by = regid]
+opeanarch[, count := .N, by = regid]
 
-# biggest candidate clusters (mostly WWII)
-tail(deaths[!is.na(EVENT_YEAR), .N, by = regid][order(N)], 30)
+# biggest candidate clusters
+tail(opeanarch[!is.na(EVENT_YEAR), .N, by = regid][order(N)], 30)
 
 # expected size is sum(N_cluster[i]*N_cluster[i])
 # here as multiple of total dataset
-deaths[, .N, by = regid][, sum(N ^ 2) / cases]
-# 88, so should max at approx 88 GB of RAM
+opeanarch[, .N, by = regid][, sum(N ^ 2) / cases]
+# 10
+
+gc()
 
 # only keep relevant variables to minimise memory usage
-tomerge = deaths[
+tomerge = opeanarch[
     !is.na(EVENT_MONTH) & 
     !is.na(EVENT_DAY) & 
     !is.na(EVENT_YEAR), 
-    .(rowid, regid, PR_NAME_GN_ST, PR_NAME_SURN)]
+    .(rowid, regid, .SD),
+    .SDcols = namevars]
+
+setnames(tomerge, paste0(".SD.", namevars), namevars)
 
 candidates = merge(
     x = tomerge, 
@@ -58,15 +69,19 @@ candidates = merge(
 
 # could already exclude/drop rowid.x == rowid.y here
 candidates[, firsim := stringsim(
-    PR_NAME_GN_ST.x, 
-    PR_NAME_GN_ST.y, 
+    get(paste0(namevars[1], ".x")),
+    get(paste0(namevars[1], ".y")),
+    # PR_NAME_GN_ST.x, 
+    # PR_NAME_GN_ST.y, 
     method = "osa", 
-    nthread = 8)]
+    nthread = 2)]
 candidates[, sursim := stringsim(
-    PR_NAME_SURN.x, 
-    PR_NAME_SURN.y, 
+    get(paste0(namevars[2], ".x")),
+    get(paste0(namevars[2], ".y")),
+    # PR_NAME_SURN.x, 
+    # PR_NAME_SURN.y, 
     method = "osa", 
-    nthread = 8)]
+    nthread = 2)]
 
 dupls = candidates[firsim * sursim > 0.8 & rowid.y != rowid.x, 
     .(clarid = c(unique(rowid.x), unique(rowid.y))),
@@ -77,27 +92,30 @@ dupls = candidates[firsim * sursim > 0.8 & rowid.y != rowid.x,
 setorder(dupls, rowid.x)
 dupls = unique(dupls, by = "clarid")
 
-deaths_dedup = dupls[deaths, on = c(clarid = "rowid")]
+opeanarch_dedup = dupls[opeanarch, on = c(clarid = "rowid")]
 
 # non-na rowid.x is duplicates, so replace V1 with rowid.x there
-deaths_dedup[, .N, by = list(is.na(rowid.x), PR_NAME_GN_ST == "")]
+opeanarch_dedup[, .N, by = list(is.na(rowid.x), get(namevars[1]) == "")]
 # 7.7m unduplicated, so we'll add 4-4.5m to that
 
 # assign rowid to clarid for duplicates
-deaths_dedup[!is.na(rowid.x), clarid := rowid.x]
+opeanarch_dedup[!is.na(rowid.x), clarid := rowid.x]
 # and flag duplicates (both)
-deaths_dedup[, duplicate := FALSE]
-deaths_dedup[!is.na(rowid.x), duplicate := TRUE]
+opeanarch_dedup[, duplicate := FALSE]
+opeanarch_dedup[!is.na(rowid.x), duplicate := TRUE]
 
-deaths_dedup[, uniqueN(clarid)]
-# so 12m deaths after dedup
+opeanarch_dedup[, uniqueN(clarid)]
 
 # first seperate missing SOURCE_DIGITAL_ORIGINAL
 # sample a couple of duplicates to see if all makes sense
-out = deaths_dedup[duplicate == TRUE
+out = opeanarch_dedup[duplicate == TRUE
     ][ clarid %in% sample(clarid, 100)
     ][ order(clarid), 
-        .(regid, PR_NAME_GN_ST, PR_NAME_SURN, PR_AGE_year, PR_FTHR_NAME_SURN, PR_MTHR_NAME_SURN)]
+        .SD,
+        .SDcols = patterns("regid|NAME|AGE|YEAR|year")]
 fwrite(out, "example_duplicates.csv")
 
-fwrite(deaths_dedup, "openarch_deaths_clean.csv.gz")
+fwrite(
+    x = opeanarch_dedup, 
+    file = dataset,
+    verbose = TRUE)
