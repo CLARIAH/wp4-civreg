@@ -137,7 +137,7 @@ unexplained[is.na(datum_geboorte) | is.na(datum_overlijden), .N] # 86
 
 unexplained <- unexplained[!is.na(datum_geboorte), ] # no missing death dates
 
-# remaining unexplained = 48
+# remaining unexplained = 48 (but not really because either too high lv for short name, or different first character lastname)
 
 fwrite(unexplained, "cod_only_unexplained.csv", sep = ";", row.names = F)
 
