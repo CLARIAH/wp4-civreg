@@ -6,5 +6,5 @@ images = glob.glob("C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\Pilots\\RAL 
 for image in images:
     with open(image, "rb") as file:
         img = Image.open(file)
-        name = os.path.splitext(image)[0] + '.jpg'
-        img.save(name, 'JPEG')
+        name = os.path.splitext(image)[0] + '.tiff'
+        img.save(name, 'tiff')
