@@ -14,7 +14,7 @@ import cv2
 import glob
 import os.path
 
-path = "*_left.jpg"
+path = "*_left.tiff"
 
 for file in glob.glob(path):
 
@@ -32,4 +32,4 @@ for file in glob.glob(path):
     basename = os.path.basename(file)  # e.g. MyPhoto.jpg
     name = os.path.splitext(basename)[0]  # e.g. MyPhoto
     print(name)
-    cv2.imwrite(name + "_cropped.png", crop_image)
+    cv2.imwrite(name + "_cropped.tiff", crop_image)
