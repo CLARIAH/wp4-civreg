@@ -5,9 +5,9 @@ import cv2
 import glob
 import os.path
 
-path = "*.jpg"
+path = "*.tiff"
 
-files = glob.glob("*.jpg")
+files = glob.glob("*.tiff")
 print(files)
 
 # Read the image
@@ -24,9 +24,9 @@ for file in glob.glob(path):
 #save image (left)
     basename = os.path.basename(file)# e.g. MyPhoto.jpg
     name = os.path.splitext(basename)[0]  # e.g. MyPhoto
-    cv2.imwrite(name + '_left.jpg', left)
+    cv2.imwrite(name + '_left.tiff', left)
 
 #save image (right)
     basename = os.path.basename(file)  # e.g. MyPhoto.jpg
     name = os.path.splitext(basename)[0]  # e.g. MyPhoto
-    cv2.imwrite(name + '_right.jpg', right)
+    cv2.imwrite(name + '_right.tiff', right)
