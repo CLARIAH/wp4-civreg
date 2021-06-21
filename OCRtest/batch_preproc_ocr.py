@@ -53,7 +53,7 @@ for file in glob.glob(path):
 
 # recognize text with tesseract for python
     #ocr = pytesseract.image_to_string(img)
-    ocr = pytesseract.image_to_string(img, config="-c tessedit_char_whitelist=01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz. --psm 6")
+    ocr = pytesseract.image_to_string(img, config="-c tessedit_char_whitelist=01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.- --psm 6")
 
 # save ocr as text
     with open(name + '_processed.txt', 'w') as f:
