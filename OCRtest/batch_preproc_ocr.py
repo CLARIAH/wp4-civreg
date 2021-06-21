@@ -16,10 +16,10 @@ import os.path
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 # Get list of filenames to convert
-files = glob.glob("*.tiff")
+files = glob.glob("*.png")
 print(files)
 
-path = "*.tiff"
+path = "*.png"
 
 for file in glob.glob(path):
     img = cv2.imread(file)
@@ -49,11 +49,11 @@ for file in glob.glob(path):
 # save processed image
     basename = os.path.basename(file)
     name = os.path.splitext(basename)[0]
-    cv2.imwrite(name + '_processed.tiff', img)
+    cv2.imwrite(name + '_processed.jpg', img)
 
 # recognize text with tesseract for python
     #ocr = pytesseract.image_to_string(img)
-    ocr = pytesseract.image_to_string(img, config = '--psm 6')
+    ocr = pytesseract.image_to_string(img, config="-c tessedit_char_whitelist=01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.- --psm 6")
 
 # save ocr as text
     with open(name + '_processed.txt', 'w') as f:
