@@ -9,13 +9,13 @@ library(stringi)
 
 setwd("C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\Causes_of_Death")
 
-births <- fread("Geboorteakten_1856_CoD.csv")
+births <- fread("Geboorteakten_1856.csv")
 
 
 
-# "###" to NA
+# "###" etc. to NA
 
-na_strings <- c("#", "##", "###", "####","#####","geen", "")
+na_strings <- c("#", "##", "###", "####","#####","geen", "", " ")
 births <- births %>% replace_with_na_all(condition = ~.x %in% na_strings)
 
 # rename variables
@@ -23,6 +23,7 @@ births <- births %>% replace_with_na_all(condition = ~.x %in% na_strings)
 setDT(births)
 setnames(births, tolower(names(births)))
 names(births) <- sub(" ", "_", names(births))
+
 
 setnames(births, 'leeftijd\nvader', "leeftijd_vader")
 setnames(births, "blad\nnummer", "bladnummer")
@@ -36,11 +37,15 @@ setnames(births, "jaar", "jaar_geboorte")
 
 births[maand_geboorte == "januari", maand_geboorte := 1]
 births[maand_geboorte == "februari", maand_geboorte := 2]
+births[maand_geboorte == "2", maand_geboorte := 2]
 births[maand_geboorte == "maart", maand_geboorte := 3]
 births[maand_geboorte == "april", maand_geboorte := 4]
+births[maand_geboorte == "4", maand_geboorte := 4]
 births[maand_geboorte == "mei", maand_geboorte := 5]
 births[maand_geboorte == "juni", maand_geboorte := 6]
+births[maand_geboorte == "junij", maand_geboorte := 6]
 births[maand_geboorte == "juli", maand_geboorte := 7]
+births[maand_geboorte == "julij", maand_geboorte := 7]
 births[maand_geboorte == "augustus", maand_geboorte := 8]
 births[maand_geboorte == "september", maand_geboorte := 9]
 births[maand_geboorte == "oktober", maand_geboorte := 10]
@@ -63,6 +68,20 @@ births[grepl("Jan", bladnummer), bladnummer := gsub("Jan", "01", bladnummer),]
 births[grepl("Feb", bladnummer), bladnummer := gsub("Feb", "02", bladnummer),]      
 births[grepl("Mar", bladnummer), bladnummer := gsub("Mar", "03", bladnummer),]      
 
+# all variables to lcase
+
+births <- data.frame(lapply(births,      
+                              function(variables) {
+                                if (is.character(variables)) {
+                                  return(tolower(variables))
+                                } else {
+                                  return(variables)
+                                }
+                              }),
+                       stringsAsFactors = FALSE)
+
+setDT(births)
+
 # standardize names according to LINKS ('LINKS_ontwerp_2020_06_03', p. 20)
 
 #Replace all 
@@ -72,28 +91,30 @@ births[grepl("Mar", bladnummer), bladnummer := gsub("Mar", "03", bladnummer),]
 #'ph' with 'f' 
 #'ij' with 'y'
 
+# first version
 births[,c(3,4,15,19,24,25,26)] <- lapply(births[,c(3,4,15,19,24,25,26)], function(y) gsub("ch", "g", y))
 births[,c(3,4,15,19,24,25,26)] <- lapply(births[,c(3,4,15,19,24,25,26)], function(y) gsub("c", "k", y))
 births[,c(3,4,15,19,24,25,26)] <- lapply(births[,c(3,4,15,19,24,25,26)], function(y) gsub("z", "s", y))
 births[,c(3,4,15,19,24,25,26)] <- lapply(births[,c(3,4,15,19,24,25,26)], function(y) gsub("ph", "f", y))
 births[,c(3,4,15,19,24,25,26)] <- lapply(births[,c(3,4,15,19,24,25,26)], function(y) gsub("ij", "y", y)) 
 
+# april2021 version
 
-# save
+births[,c(3 ,4, 15, 16, 19)] <- lapply(births[,c(3 ,4, 15, 16, 19)], function(y) gsub("ch", "g", y))
+births[,c(3 ,4, 15, 16, 19)] <- lapply(births[,c(3 ,4, 15, 16, 19)], function(y) gsub("c", "k", y))
+births[,c(3 ,4, 15, 16, 19)] <- lapply(births[,c(3 ,4, 15, 16, 19)], function(y) gsub("z", "s", y))
+births[,c(3 ,4, 15, 16, 19)] <- lapply(births[,c(3 ,4, 15, 16, 19)], function(y) gsub("ph", "f", y))
+births[,c(3 ,4, 15, 16, 19)] <- lapply(births[,c(3 ,4, 15, 16, 19)], function(y) gsub("ij", "y", y)) 
 
-write.csv2(births, "Geboorteakten_1856_CoD_clean.csv", quote = TRUE, fileEncoding = "UTF-8", na="", row.names = FALSE )
 
-### seperate prefixes to enable record linkage
+# remove diacritics (april 2021 version)
+births[, voornamen_vader := stri_trans_general(voornamen_vader, "Latin-ASCII")]
+births[, achternaam_vader := stri_trans_general(achternaam_vader, "Latin-ASCII")]
+births[, voornamen_moeder := stri_trans_general(voornamen_moeder, "Latin-ASCII")]
+births[, achternaam_moeder := stri_trans_general(achternaam_moeder, "Latin-ASCII")]
+births[, voornamen_kind := stri_trans_general(voornamen_kind, "Latin-ASCII")]
+#births[, achternaam_kind := stri_trans_general(achternaam_kind, "Latin-ASCII")]
 
-births <- fread("Geboorteakten_1856_CoD_clean.csv")
-
-# names to lcase
-
-births[, voornamen_vader := tolower(voornamen_vader)]
-births[, achternaam_vader := tolower(achternaam_vader)]
-births[, voornamen_moeder := tolower(voornamen_moeder)]
-births[, achternaam_moeder := tolower(achternaam_moeder)]
-births[, voornamen_kind := tolower(voornamen_kind)]
 
 
 # function to find and seperate prefixes from surname
@@ -117,6 +138,7 @@ split_prefixes = function(strings){
     "v. .d.",
     "van den",
     "van der",
+    "vanden",
     "vander",
     "van",
     "van[.]",
@@ -147,7 +169,7 @@ list <- split_prefixes(births$achternaam_moeder)
 
 births <- cbind(births, list)
 
-# generate surname child from surname father clean and leave empty if no father lastname (cannot be sure lastname mother is used instead?)
+# generate surname child from surname father clean and leave empty if no father lastname 
 
 births[achternaam_vader == "", achternaam_vader_clean := NA]
 
@@ -155,14 +177,21 @@ births[!is.na(achternaam_vader_clean), achternaam_kind_clean := achternaam_vader
 
 births[!is.na(voorvoegsel_achternaam_vader), voorvoegsel_achternaam_kind := voorvoegsel_achternaam_vader]
 
+# replace last name child NA with last name mother
+
+births[is.na(achternaam_kind_clean), achternaam_kind_clean := achternaam_moeder_clean]
+
+births[!is.na(voorvoegsel_achternaam_moeder), voorvoegsel_achternaam_kind := voorvoegsel_achternaam_moeder]
+
+
 # save
 
-write.csv2(births, "Geboorteakten_1856_CoD_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
+write.csv2(births, "Geboorteakten_1856_april2021_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
 
 
 #### DEATHS
 
-deaths <- fread("Overlijdensakten_1856_1857_CoD.csv")
+deaths <- fread("Overlijdensakten_1856_1857.csv")
 
 # rename variables
 
@@ -197,16 +226,21 @@ datestring <- paste0(deaths$jaar,"-",str_pad(deaths$maand, 2,"left", pad = "0"),
 
 deaths[, datum_overlijden := as.Date(datestring)]
 
-# names to lcase
+# all variables to lcase
 
-deaths[, voornamen_vader := tolower(voornamen_vader)]
-deaths[, achternaam_vader := tolower(achternaam_vader)]
-deaths[, voornamen_moeder := tolower(voornamen_moeder)]
-deaths[, achternaam_moeder := tolower(achternaam_moeder)]
-deaths[, voornamen_kind := tolower(voornamen_kind)]
-deaths[, achternaam_kind := tolower(achternaam_kind)]
+deaths <- data.frame(lapply(deaths,      
+                            function(variables) {
+                              if (is.character(variables)) {
+                                return(tolower(variables))
+                              } else {
+                                return(variables)
+                              }
+                            }),
+                     stringsAsFactors = FALSE)
+setDT(deaths)
 
 # remove diacritics
+
 deaths[, voornamen_vader := stri_trans_general(voornamen_vader, "Latin-ASCII")]
 deaths[, achternaam_vader := stri_trans_general(achternaam_vader, "Latin-ASCII")]
 deaths[, voornamen_moeder := stri_trans_general(voornamen_moeder, "Latin-ASCII")]
@@ -224,11 +258,21 @@ deaths[, achternaam_kind := stri_trans_general(achternaam_kind, "Latin-ASCII")]
 #'ph' with 'f' 
 #'ij' with 'y'
 
+# first version
 deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ch", "g", y))
 deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("c", "k", y))
 deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("z", "s", y))
 deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ph", "f", y))
 deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ij", "y", y))
+
+# april2021 version
+deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ch", "g", y))
+deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("c", "k", y))
+deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("z", "s", y))
+deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ph", "f", y))
+deaths[,c(11:12, 16:19)] <- lapply(deaths[,c(11:12, 16:19)], function(y) gsub("ij", "y", y))
+
+
 
 # remove prefixes from lastnames
 
@@ -268,30 +312,28 @@ split_prefixes = function(strings){
   
   return(
     data.frame(
-      voorvoegsel_achternaam_moeder = stringi::stri_extract_first_regex(
+      voorvoegsel_achternaam_kind = stringi::stri_extract_first_regex(
         strings, pattern, case_insensitive = TRUE),
-      achternaam_moeder_clean = stringi::stri_replace_first_regex(
+      achternaam_kind_clean = stringi::stri_replace_first_regex(
         strings, pattern, "", case_insensitive = TRUE),
       stringsAsFactors = FALSE
     )
   )
 }
 
-list1 <- split_prefixes(deaths$achternaam_moeder)
+list1 <- split_prefixes(deaths$achternaam_kind)
 
 deaths <- cbind(deaths, list1)
 
+# "###" etc. to NA
 
-list2 <- split_prefixes(deaths$achternaam_moeder) # first change function 
+na_strings <- c("#", "##", "###", "####","#####","geen", "", " ")
+deaths <- deaths %>% replace_with_na_all(condition = ~.x %in% na_strings)
 
-deaths <- cbind(deaths, list2)
 
-list3 <- split_prefixes(deaths$achternaam_kind) # first change function 
-
-deaths <- cbind(deaths, list3)
 
 # save 
 
-write.csv2(deaths, "Overlijdensakten_1856_1857_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
+write.csv2(deaths, "Overlijdensakten_1856_1857_april2021_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
 
 
