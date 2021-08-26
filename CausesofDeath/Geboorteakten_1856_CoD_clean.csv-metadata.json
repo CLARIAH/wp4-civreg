@@ -4,7 +4,7 @@
   "https://raw.githubusercontent.com/CLARIAH/COW/master/csvw.json",
   {
    "@language": "en",
-   "@base": "https://iisg.amsterdam/links/"
+   "@base": "https://iisg.amsterdam/id/civ/"
   },
   {
    "bibo": "http://purl.org/ontology/bibo/",
@@ -16,6 +16,7 @@
    "clioctr": "https://iisg.amsterdam/clio/country/",
    "clioind": "https://iisg.amsterdam/clio/indicator/",
    "clioprop": "https://iisg.amsterdam/clio/property/",
+   "civ": "https://iisg.amsterdam/id/civ/",
    "csvw": "http://www.w3.org/ns/csvw#",
    "dbo": "http://dbpedia.org/ontology/",
    "dbp": "http://dbpedia.org/property/",
@@ -88,7 +89,8 @@
     "@id": "https://iisg.amsterdam/Geboorteakten_1856_CoD_clean.csv/column/id",
     "name": "id",
     "titles": ["id"],
-    "propertyUrl": "https://iisg.amsterdam/links/vocab/originalID",
+    "aboutUrl":"event/b-{id}",
+    "propertyUrl": "https://iisg.amsterdam/cod/originalID",
     "dc:description": "original id number",
     "datatype": "int"
    },
@@ -96,21 +98,21 @@
    "virtual": "true",
    "aboutUrl": "person/b-{{(id|int * 3) + 1}}",
    "datatype": "int",
-   "propertyUrl": "https://iisg.amsterdam/links/vocab/personID",
+   "propertyUrl": "civ:personID",
    "csvw:value":"{{(id|int * 3) + 1 }}"
  },
  {
  "virtual": "true",
  "datatype": "int",
  "aboutUrl":"person/b-{{(id|int * 3) + 2}}",
- "propertyUrl": "https://iisg.amsterdam/links/vocab/personID",
+ "propertyUrl": "civ:personID",
  "csvw:value":"{{(id|int * 3) + 2 }}"
 },
 {
 "virtual": "true",
 "datatype": "int",
 "aboutUrl":"person/b-{{(id|int * 3) + 3}}",
-"propertyUrl": "https://iisg.amsterdam/links/vocab/personID",
+"propertyUrl": "civ:personID",
 "csvw:value":"{{(id|int * 3) + 3 }}"
 },
  {
@@ -134,30 +136,22 @@
  {
  "virtual": "true",
  "aboutUrl":"event/b-{id}",
- "propertyUrl": "https://iisg.amsterdam/links/vocab/newborn",
+ "propertyUrl": "civ:newborn",
  "valueUrl": "person/b-{{(id|int * 3) + 1}}"
  },
  {
  "virtual": "true",
  "aboutUrl":"event/b-{id}",
- "propertyUrl": "https://iisg.amsterdam/links/vocab/father",
+ "propertyUrl": "civ:father",
  "valueUrl":"person/b-{{(id|int * 3) + 2}}"
  },
  {
  "virtual": "true",
  "aboutUrl":"event/b-{id}",
- "propertyUrl": "https://iisg.amsterdam/links/vocab/mother",
+ "propertyUrl": "civ:mother",
  "valueUrl":"person/b-{{(id|int * 3) + 3}}"
  },
-  {
-  "@id": "https://iisg.amsterdam/Geboorteakten_1856_CoD_clean.csv/column/bladnummer",
-  "name": "bladnummer",
-  "titles": [ "bladnummer"],
-  "propertyUrl": "vocab/page_source",
-  "dc:description": "page number of source",
-  "datatype": "string"
- },
- {
+   {
   "virtual": "true",
   "name": "voornamen_vader",
   "titles": ["voornamen_vader"],
@@ -173,7 +167,7 @@
   "titles": [ "beroep_vader" ],
   "aboutUrl": "person/b-{{(id|int * 3) + 2}}",
   "propertyUrl": "schema:hasOccupation",
-  "valueUrl": "occupation/{{beroep_vader}}",
+  "valueUrl": "https://iisg.amsterdam/resource/hsn/occupation/{{beroep_vader}}",
   "dc:description": "occupation",
   "datatype": "string",
   "null": [""]
@@ -185,7 +179,7 @@
   "aboutUrl": "person/b-{{(id|int * 3) + 2}}",
   "dc:description": "age in years",
   "datatype": "int",
-  "propertyUrl": "https://iisg.amsterdam/links/vocab/ageYears",
+  "propertyUrl": "civ:ageYears",
   "csvw:value":"{leeftijd_vader}",
   "null": [""]
  },
@@ -193,14 +187,23 @@
  "virtual": "true",
  "aboutUrl":"event/b-{id}",
  "propertyUrl": "rdf:type",
- "valueUrl": "bio:Birth"
+ "valueUrl": "civ:Birth"
+ },
+ {
+ "virtual": "true",
+ "aboutUrl":"event/b-{id}",
+ "propertyUrl": "civ:registrationID",
+ "name": "id",
+ "titles": ["id"],
+ "datatype": "int",
+ "csvw:value": "{{id|int}}"
  },
  {
  "virtual": "true",
  "datatype": "date",
  "name": "datum_geboorte",
  "aboutUrl":"event/b-{id}",
- "propertyUrl": "bio:date",
+ "propertyUrl": "civ:eventDate",
  "csvw:value": "{datum_geboorte}",
  "null": [""]
  },
@@ -246,14 +249,14 @@
   "virtual": "true",
   "name": "huisnummerummer",
   "titles": [  "huisnummerummer"],
-  "propertyUrl": "vocab/houseNumber",
+  "propertyUrl": "cod/houseNumber",
   "aboutUrl":"event/b-{id}",
   "dc:description": "house number",
   "datatype": "int"
  },
  {
   "virtual": "true",
-  "aboutUrl":"event/{id}",
+  "aboutUrl":"event/b-{id}",
   "name": "huisnummertoevoeging",
   "propertyUrl": "vocab/houseNumberAdditional",
   "titles": [  "huisnummertoevoeging"],
@@ -339,7 +342,7 @@
    {
     "virtual": "true",
     "datatype": "string",
-    "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+    "propertyUrl": "civ:prefixFamilyName",
     "name": "voorvoegsel_achternaam_kind"
    },
    {
@@ -347,7 +350,7 @@
     "titles": [ "voorvoegsel_achternaam_vader"],
     "datatype": "string",
     "aboutUrl": "person/b-{{(id|int * 3) + 2}}",
-    "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+    "propertyUrl": "civ:prefixFamilyName",
     "name": "voorvoegsel_achternaam_vader"
    },
    {
@@ -355,14 +358,14 @@
     "titles": [ "voorvoegsel_achternaam_moeder"],
     "datatype": "string",
     "aboutUrl": "person/b-{{(id|int * 3) + 3}}",
-    "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+    "propertyUrl": "civ:prefixFamilyName",
     "name": "voorvoegsel_achternaam_moeder"
    },
  {
   "virtual": "true",
   "aboutUrl":"event/b-{id}",
   "name": "datum_erkenning",
-  "propertyUrl": "vocab/recognitionDate",
+  "propertyUrl": "cod/recognitionDate",
   "titles": ["datum_erkenning"],
   "dc:description": "date of recognition by father (not standardized)",
   "datatype": "string",
@@ -376,14 +379,8 @@
   "titles": ["opmerkingen"],
   "dc:description": "remark",
   "datatype": "string"
- },
- {
-"virtual": "true",
-"aboutUrl":"event/b-{id}",
-"propertyUrl": "rdf:type",
-"valueUrl": "bio:Birth"
-}
-  ],
+ }
+   ],
   "primaryKey": "id",
   "aboutUrl": "person/b-{{(id|int * 3) + 1}}"
  }

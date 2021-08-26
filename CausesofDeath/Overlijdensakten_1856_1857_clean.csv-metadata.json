@@ -4,7 +4,7 @@
   "https://raw.githubusercontent.com/CLARIAH/COW/master/csvw.json",
   {
    "@language": "en",
-   "@base": "https://iisg.amsterdam/links/"
+   "@base": "https://iisg.amsterdam/id/civ/"
   },
   {
    "aat": "http://vocab.getty.edu/aat/",
@@ -12,6 +12,7 @@
    "bio": "http://purl.org/vocab/bio/0.1/",
    "cid_ovl_akteoc": "http://www.cid_ovl_akteoc-crm.org/cid_ovl_akteoc-crm/",
    "csvw": "http://www.w3.org/ns/csvw#",
+   "civ": "https://iisg.amsterdam/id/civ/",
    "dbo": "http://dbpedia.org/ontology/",
    "dc": "http://purl.org/dc/terms/",
    "dc11": "http://purl.org/dc/elements/1.1/",
@@ -73,7 +74,8 @@
      "virtual": "true",
      "name": "id_ovl_akte",
      "titles": ["id_ovl_akte"],
-     "propertyUrl": "https://iisg.amsterdam/links/vocab/originalid_ovl_akte",
+     "aboutUrl":"event/d-{id_ovl_akte}",
+     "propertyUrl": "cod/originalid_ovl_akte",
      "dc:description": "original id_ovl_akte number",
      "datatype": "int"
     },
@@ -81,21 +83,21 @@
     "virtual": "true",
     "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 1}}",
     "datatype": "int",
-    "propertyUrl": "https://iisg.amsterdam/links/vocab/personid_ovl_akte",
+    "propertyUrl": "civ:personID",
     "csvw:value":"{{(id_ovl_akte|int * 4) + 1 }}"
   },
   {
   "virtual": "true",
   "datatype": "int",
   "aboutUrl":"person/d-{{(id_ovl_akte|int * 4) + 2}}",
-  "propertyUrl": "https://iisg.amsterdam/links/vocab/personid_ovl_akte",
+  "propertyUrl": "civ:personID",
   "csvw:value":"{{(id_ovl_akte|int * 4) + 2 }}"
  },
  {
  "virtual": "true",
  "datatype": "int",
  "aboutUrl":"person/d-{{(id_ovl_akte|int * 4) + 3}}",
- "propertyUrl": "https://iisg.amsterdam/links/vocab/personid_ovl_akte",
+ "propertyUrl": "civ:personID",
  "csvw:value":"{{(id_ovl_akte|int * 4) + 3 }}"
  },
   {
@@ -119,30 +121,22 @@
   {
   "virtual": "true",
   "aboutUrl":"event/d-{id_ovl_akte}",
-  "propertyUrl": "https://iisg.amsterdam/links/vocab/deceased",
+  "propertyUrl": "civ:deceased",
   "valueUrl": "person/d-{{(id_ovl_akte|int * 4) + 1}}"
   },
   {
   "virtual": "true",
   "aboutUrl":"event/d-{id_ovl_akte}",
-  "propertyUrl": "https://iisg.amsterdam/links/vocab/father",
+  "propertyUrl": "civ:father",
   "valueUrl":"person/d-{{(id_ovl_akte|int * 4) + 2}}"
   },
   {
   "virtual": "true",
   "aboutUrl":"event/d-{id_ovl_akte}",
-  "propertyUrl": "https://iisg.amsterdam/links/vocab/mother",
+  "propertyUrl": "civ:mother",
   "valueUrl":"person/d-{{(id_ovl_akte|int * 4) + 3}}"
   },
-   {
-   "@id_ovl_akte": "https://iisg.amsterdam/overlijdenakten_1856_CoD_clean.csv/column/bladnummer",
-   "name": "bladnummer",
-   "titles": [ "bladnummer"],
-   "propertyUrl": "vocab/page_source",
-   "dc:description": "page number of source",
-   "datatype": "string"
-  },
-  {
+    {
    "virtual": "true",
    "name": "voornamen_vader",
    "titles": ["voornamen_vader"],
@@ -158,34 +152,32 @@
    "titles": [ "beroep_vader" ],
    "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 2}}",
    "propertyUrl": "schema:hasOccupation",
-   "valueUrl": "occupation/{{beroep_vader}}",
+   "valueUrl": "https://iisg.amsterdam/resource/hsn/occupation/{{beroep_vader}}",
    "dc:description": "occupation",
    "datatype": "string",
    "null": [""]
   },
-  {
-   "virtual": "true",
-   "name": "leeftijd",
-   "titles": ["leeftijd"],
-   "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 1}}",
-   "dc:description": "age",
-   "datatype": "int",
-   "propertyUrl": "https://iisg.amsterdam/links/vocab/ageYears",
-   "csvw:value":"{leeftijd}",
-   "null": [""]
+    {
+  "virtual": "true",
+  "aboutUrl":"event/d-{id_ovl_akte}",
+  "propertyUrl": "rdf:type",
+  "valueUrl": "civ:Death"
   },
   {
   "virtual": "true",
   "aboutUrl":"event/d-{id_ovl_akte}",
-  "propertyUrl": "rdf:type",
-  "valueUrl": "bio:Death"
+  "propertyUrl": "civ:registrationID",
+  "name": "id_ovl_akte",
+  "titles": ["id_ovl_akte"],
+  "datatype": "int",
+  "csvw:value": "{{id_ovl_akte|int}}"
   },
   {
   "virtual": "true",
   "datatype": "date",
   "name": "datum_overlijden",
   "aboutUrl":"event/d-{id_ovl_akte}",
-  "propertyUrl": "bio:date",
+  "propertyUrl": "civ:eventDate",
   "csvw:value": "{datum_overlijden}",
   "null": [""]
   },
@@ -193,7 +185,7 @@
    "virtual": "true",
    "name": "straatnaam",
    "titles": [ "straatnaam"],
-   "propertyUrl": "vocab/event_streetName",
+   "propertyUrl": "cod/event_streetName",
    "aboutUrl":"event/d-{id_ovl_akte}",
    "dc:description": "street name",
    "valueUrl": "event_streetName/{straatnaam}",
@@ -212,7 +204,7 @@
    "virtual": "true",
    "name": "buurt",
    "titles": [ "buurt"],
-   "propertyUrl": "vocab/event_districtName",
+   "propertyUrl": "cod/event_districtName",
    "aboutUrl":"event/d-{id_ovl_akte}",
    "dc:description": "district name",
    "valueUrl": "event_districtName/{buurt}",
@@ -231,7 +223,7 @@
    "virtual": "true",
    "name": "nummer",
    "titles": [  "nummer"],
-   "propertyUrl": "vocab/houseNumber",
+   "propertyUrl": "cod/houseNumber",
    "aboutUrl":"event/d-{id_ovl_akte}",
    "dc:description": "house number",
    "datatype": "int"
@@ -305,7 +297,7 @@
     {
      "virtual": "true",
      "datatype": "string",
-     "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+     "propertyUrl": "civ:prefixFamilyName",
      "name": "voorvoegsel_achternaam_kind"
     },
     {
@@ -313,7 +305,7 @@
      "titles": [ "voorvoegsel_achternaam_moeder"],
      "datatype": "string",
      "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 3}}",
-     "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+     "propertyUrl": "civ:prefixFamilyName",
      "name": "voorvoegsel_achternaam_moeder"
     },
     {
@@ -321,16 +313,10 @@
      "titles": [ "voorvoegsel_achternaam_vader"],
      "datatype": "string",
      "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 2}}",
-     "propertyUrl": "https://iisg.amsterdam/links/vocab/prefixFamilyName",
+     "propertyUrl": "civ:prefixFamilyName",
      "name": "voorvoegsel_achternaam_vader"
-    },
-      {
- "virtual": "true",
- "aboutUrl":"event/d-{id_ovl_akte}",
- "propertyUrl": "rdf:type",
- "valueUrl": "bio:Death"
- }
-   ],
+    }
+         ],
    "primaryKey": "id_ovl_akte",
    "aboutUrl": "person/d-{{(id_ovl_akte|int * 4) + 1}}"
   }
