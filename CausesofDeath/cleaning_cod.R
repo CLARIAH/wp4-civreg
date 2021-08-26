@@ -9,8 +9,7 @@ library(stringi)
 
 setwd("C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\Causes_of_Death")
 
-births <- fread("Geboorteakten_1856.csv")
-
+births <- fread("Geboorteakten_1856_CoD.csv")
 
 
 # "###" etc. to NA
@@ -183,10 +182,14 @@ births[is.na(achternaam_kind_clean), achternaam_kind_clean := achternaam_moeder_
 
 births[!is.na(voorvoegsel_achternaam_moeder), voorvoegsel_achternaam_kind := voorvoegsel_achternaam_moeder]
 
+# remove  - from bladnummer to avoid burgerLinker closure to break
+
+births[, bladnummer := gsub("-", "_", bladnummer), ]
+
 
 # save
 
-write.csv2(births, "Geboorteakten_1856_april2021_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
+write.csv2(births, "Geboorteakten_1856_CoD_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
 
 
 #### DEATHS
@@ -330,10 +333,13 @@ deaths <- cbind(deaths, list1)
 na_strings <- c("#", "##", "###", "####","#####","geen", "", " ")
 deaths <- deaths %>% replace_with_na_all(condition = ~.x %in% na_strings)
 
+# remove / from leeftijd and - from bladnummer to avoid burgerLinker closure to break
 
+deaths[, leeftijd := gsub("/", "", leeftijd), ]
+deaths[, bladnummer := gsub("-", "_", bladnummer), ]
 
 # save 
 
-write.csv2(deaths, "Overlijdensakten_1856_1857_april2021_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
+write.csv2(deaths, "Overlijdensakten_1856_1857_clean.csv", sep = ";", quote = TRUE, row.names = FALSE, fileEncoding = "UTF8",  na = "")
 
 
