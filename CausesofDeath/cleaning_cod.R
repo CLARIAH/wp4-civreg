@@ -9,7 +9,7 @@ library(stringi)
 
 setwd("C:\\Users\\Ruben\\Documents\\02. Werk\\Clariah\\Causes_of_Death")
 
-births <- fread("Geboorteakten_1856_CoD.csv")
+births <- fread("Geboorteakten_1856.csv")
 
 
 # "###" etc. to NA
