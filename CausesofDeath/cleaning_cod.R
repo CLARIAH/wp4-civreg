@@ -194,7 +194,7 @@ write.csv2(births, "Geboorteakten_1856_CoD_clean.csv", sep = ";", quote = TRUE, 
 
 #### DEATHS
 
-deaths <- fread("Overlijdensakten_1856_1857.csv")
+deaths <- fread("Overlijdensakten_1856_1857_CoD.csv")
 
 # rename variables
 
